@@ -16,7 +16,7 @@ using namespace std;
 
 namespace index
 {
-	class wcounter
+	class wanalysis
 	{
 		private:
 			vector<occurrance> occurrances;
@@ -37,7 +37,7 @@ namespace index
 				return input;
 			}
 			
-			wcounter(string word)
+			wanalysis(string word)
 			{
 				this->word = word;
 			}

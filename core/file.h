@@ -10,6 +10,7 @@
 #include<string>
 #include<vector>
 #include<fstream>
+#include<dirent.h>
 
 #include "index.h"
 
@@ -44,19 +45,18 @@ namespace disk
 		private:
 			vector<string>filenames;
 		public:
-			file(string filename)
+			file(vector<string>filenames)
 			{
-				filenames.insert(filenames.end(), filename);
+				this->filenames = filenames;
 			}
 			
-			void iterate(wcounter& p)
+			void iterate(wanalysis& p)
 			{
 				vector<string>::iterator i = filenames.begin();
 				while(i != filenames.end())
 				{
-					/* TODO (rasekh#1#): Problem iterating through filenames. */
-					
-					ifstream fin("51908");
+					ifstream fin((*i).c_str());
+					cout<<*i<<" Opened:"<<endl;
 					string word = "";
 					while(!fin.eof())
 					{
@@ -66,7 +66,6 @@ namespace disk
 							word += c;
 						else
 						{
-							cout<<word<<endl;
 							p.process(word);
 							word = "";
 						}
@@ -85,7 +84,19 @@ namespace disk
 		public:
 			static vector<string> getFiles(string directory)
 			{
-				
+				vector<string> res;
+				DIR *pDIR;
+		        struct dirent *entry;
+		        if(pDIR=opendir(directory.c_str()))
+				{
+		                while(entry = readdir(pDIR))
+						{
+		                        if(strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 )
+		                        	res.insert(res.end(),directory + "\\" + entry->d_name);
+		                }
+		                closedir(pDIR);
+        		}
+        		return res;
 			}
 	};
 }

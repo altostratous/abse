@@ -4,11 +4,12 @@
 
 using namespace index;
 using namespace std;
+using namespace disk;
 
 int main(int argc, char** argv) {
-	file f("51908");
-	wcounter wc("66");
-	f.iterate(wc);
-	cout<<"number of someone: "<< wc.getCount();
+	file f(dir::getFiles("E:\\absefiles"));
+	wanalysis wa("computer");
+	f.iterate(wa);
+	cout<<wa.getCount();
 	return 0;
 }
