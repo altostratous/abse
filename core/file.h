@@ -4,6 +4,11 @@
 	Here we will imlement functions to iterate files and perform any process
 */
 
+#ifndef ABSE_FILE
+#define ABSE_FILE 1
+
+#include<string>
+
 namespace disk
 {
 	/*
@@ -22,5 +27,13 @@ namespace disk
 		/* TODO (rasekh#1#): Implement properties. */
 		/* TODO (asgari#1#): Implement iterating functions. */
 		
-	}
+	};
+	
+//	class processor
+//	{
+//		public:
+//			virtual string process(string input) = 0; 
+//	};
 }
+
+#endif
