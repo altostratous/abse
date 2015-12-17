@@ -8,9 +8,24 @@
 #define ABSE_FILE 1
 
 #include<string>
+#include<vector>
+#include<fstream>
+
+#include "index.h"
+
+using namespace std;
+using namespace index;
 
 namespace disk
 {
+	
+//	class tprocessor
+//	{
+//		public:
+//			string process(string input){return "";}
+//		 
+//	};
+	
 	/*
 		This class should have these members:
 			1- a function to iterate files word by word like this 
@@ -26,14 +41,53 @@ namespace disk
 	{
 		/* TODO (rasekh#1#): Implement properties. */
 		/* TODO (asgari#1#): Implement iterating functions. */
-		
+		private:
+			vector<string>filenames;
+		public:
+			file(string filename)
+			{
+				filenames.insert(filenames.end(), filename);
+			}
+			
+			void iterate(wcounter& p)
+			{
+				vector<string>::iterator i = filenames.begin();
+				while(i != filenames.end())
+				{
+					/* TODO (rasekh#1#): Problem iterating through filenames. */
+					
+					ifstream fin("51908");
+					string word = "";
+					while(!fin.eof())
+					{
+						char c;
+						fin.get(c);
+						if(c != ' ')
+							word += c;
+						else
+						{
+							cout<<word<<endl;
+							p.process(word);
+							word = "";
+						}
+					}
+					fin.close();
+					++i;
+				}
+			}
 	};
 	
-//	class processor
-//	{
-//		public:
-//			virtual string process(string input) = 0; 
-//	};
+	/*
+		This class is for getting files in a direcory
+	*/
+	class dir
+	{
+		public:
+			static vector<string> getFiles(string directory)
+			{
+				
+			}
+	};
 }
 
 #endif

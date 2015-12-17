@@ -9,6 +9,7 @@
 #include<string>
 
 #include "ds.h"
+#include "file.h"
 
 using namespace ds;
 using namespace std;
