@@ -12,10 +12,10 @@ namespace ds
 			2- Id of the file
 			3- Id of the word
 	*/
-	struct occurrence
+	struct occurrance
 	{
 		/* TODO (rasekh#1#): Implement this structure according to the 
 		                     descriptions above it */
 		
-	}
+	};
 }

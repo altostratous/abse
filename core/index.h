@@ -6,9 +6,12 @@
 #define ABSE_INDEX 1
 
 #include<vector>
-#include<ds.h>
+#include<string>
+
+#include "ds.h"
 
 using namespace ds;
+using namespace std;
 
 namespace index
 {
@@ -16,12 +19,28 @@ namespace index
 	{
 		private:
 			vector<occurrance> occurrances;
+			string word;
 		public:
 			int getCount()
 			{
-			
+				return occurrances.size();
 			}
-	}
+			
+			string process(string input)
+			{
+				if(input == word)
+				{
+					occurrance o;
+					occurrances.insert(occurrances.end(), o);
+				}
+				return input;
+			}
+			
+			wcounter(string word)
+			{
+				this->word = word;
+			}
+	};
 }
 
 #endif
