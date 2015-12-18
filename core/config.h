@@ -68,7 +68,6 @@ namespace disk
 					while(!fin.eof())
 					{
 						getline(fin, l);
-						cout<<l<<endl;
 						add(l);
 					}
 					fin.close();

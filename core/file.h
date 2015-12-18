@@ -15,9 +15,11 @@
 				
 
 #include "index.h"
+#include "ds.h"
 
 using namespace std;
 using namespace index;
+using namespace ds;
 
 namespace disk
 {	
@@ -38,10 +40,17 @@ namespace disk
 		/* TODO (asgari#1#): Implement iterating functions. */
 		private:
 			vector<string>filenames;
+			string wordSeperators;
 		public:
 			file(vector<string>filenames)
 			{
 				this->filenames = filenames;
+				wordSeperators = " ";
+			}
+			
+			void setWordSeperators(string ws)
+			{
+				wordSeperators = ws;
 			}
 			
 			void iterate(analysis& p)
@@ -50,22 +59,38 @@ namespace disk
 				while(i != filenames.end())
 				{
 					ifstream fin((*i).c_str());
-					cout<<*i<<" Opened:"<<endl;
 					string word = "";
 					while(!fin.eof())
 					{
 						char c;
 						fin.get(c);
-						if(c != ' ')
+						if(wordSeperators.find(c)==string::npos)
 							word += c;
 						else
 						{
-							p.process(word);
+							occurrance o;
+							o.file_id = distance(filenames.begin(), i);
+							o.index = fin.tellg() - word.length();
+							o.length = word.length();
+							p.process(word, o);
 							word = "";
 						}
 					}
 					fin.close();
 					++i;
+				}
+			}
+			
+			string look(occurrance o)
+			{
+				string path = *(filenames.begin() + o.file_id);
+				ifstream fin(path.c_str());
+				fin.seekg(o.index -1, ios::beg);
+				char c;
+				for(int i = 0; i < o.length; i++)
+				{
+					fin.get(c);
+					cout<<c;
 				}
 			}
 	};

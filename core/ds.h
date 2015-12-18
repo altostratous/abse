@@ -3,6 +3,9 @@
 	Note: Everything here should be storable and retrivable
 */
 
+#ifndef ABSE_DS
+#define ABSE_DS 1
+
 namespace ds
 {
 	/*
@@ -14,8 +17,11 @@ namespace ds
 	*/
 	struct occurrance
 	{
-		/* TODO (rasekh#1#): Implement this structure according to the 
-		                     descriptions above it */
-		
+		int file_id;
+		int word_id;
+		int index;
+		int length;
 	};
 }
+
+#endif

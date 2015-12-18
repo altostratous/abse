@@ -19,7 +19,7 @@ namespace index
 	class analysis
 	{
 		public:
-			virtual string process(string input) = 0;
+			virtual string process(string input, occurrance o) = 0;
 	};
 	
 	class wanalysis : public analysis
@@ -33,11 +33,11 @@ namespace index
 				return occurrances.size();
 			}
 			
-			string process(string input)
+			string process(string input, occurrance o)
 			{
+				//cout<<input<<endl;
 				if(input == word)
 				{
-					occurrance o;
 					occurrances.insert(occurrances.end(), o);
 				}
 				return input;
@@ -46,6 +46,11 @@ namespace index
 			wanalysis(string word)
 			{
 				this->word = word;
+			}
+			
+			occurrance getOccurrance(int id)
+			{
+				return *(occurrances.begin() + id);
 			}
 	};
 }
