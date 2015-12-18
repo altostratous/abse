@@ -21,6 +21,7 @@ namespace ds
 		int word_id;
 		int index;
 		int length;
+		int paragraph_id;
 	};
 }
 

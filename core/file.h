@@ -53,31 +53,44 @@ namespace disk
 				wordSeperators = ws;
 			}
 			
-			void iterate(analysis& p)
+			void iterate(analysis& p, string output="")
 			{
+				ofstream fout;
+				if(output != "")
+				{
+					fout.open(output.c_str());
+				}
 				vector<string>::iterator i = filenames.begin();
 				while(i != filenames.end())
 				{
 					ifstream fin((*i).c_str());
+					int paragraph_id = 0;
 					string word = "";
 					while(!fin.eof())
 					{
 						char c;
 						fin.get(c);
-						if(wordSeperators.find(c)==string::npos)
+						if(wordSeperators.find(c)==string::npos && c!='\n')
 							word += c;
 						else
 						{
+							if(c=='\n')
+								paragraph_id++;
 							occurrance o;
 							o.file_id = distance(filenames.begin(), i);
-							o.index = fin.tellg() - word.length();
+							o.index = ((int)fin.tellg() - word.length());
 							o.length = word.length();
-							p.process(word, o);
+							o.paragraph_id = paragraph_id;
+							fout << p.process(word, o);
 							word = "";
 						}
 					}
 					fin.close();
 					++i;
+				}
+				if(output != "")
+				{
+					fout.close();
 				}
 			}
 			
@@ -86,12 +99,14 @@ namespace disk
 				string path = *(filenames.begin() + o.file_id);
 				ifstream fin(path.c_str());
 				fin.seekg(o.index -1, ios::beg);
+				string word;
 				char c;
 				for(int i = 0; i < o.length; i++)
 				{
 					fin.get(c);
-					cout<<c;
+					word += c;
 				}
+				return word;
 			}
 	};
 	

@@ -40,7 +40,7 @@ namespace index
 				{
 					occurrances.insert(occurrances.end(), o);
 				}
-				return input;
+				return input + " ";
 			}
 			
 			wanalysis(string word)
