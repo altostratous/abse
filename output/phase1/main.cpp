@@ -7,7 +7,7 @@ using namespace std;
 using namespace disk;
 
 int main(int argc, char** argv) {
-	file f(dir::getFiles("E:\\absefiles"));
+	file f(dir::getFiles("E:\\absefiles", true));
 	wanalysis wa("computer");
 	f.iterate(wa);
 	cout<<wa.getCount();

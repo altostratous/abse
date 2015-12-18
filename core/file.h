@@ -11,6 +11,8 @@
 #include<vector>
 #include<fstream>
 #include<dirent.h>
+#include<sys/types.h>
+				
 
 #include "index.h"
 
@@ -18,15 +20,7 @@ using namespace std;
 using namespace index;
 
 namespace disk
-{
-	
-//	class tprocessor
-//	{
-//		public:
-//			string process(string input){return "";}
-//		 
-//	};
-	
+{	
 	/*
 		This class should have these members:
 			1- a function to iterate files word by word like this 
@@ -82,21 +76,53 @@ namespace disk
 	class dir
 	{
 		public:
-			static vector<string> getFiles(string directory)
+			static vector<string> getFiles(string directory, bool recursive = false)
 			{
 				vector<string> res;
 				DIR *pDIR;
 		        struct dirent *entry;
 		        if(pDIR=opendir(directory.c_str()))
 				{
-		                while(entry = readdir(pDIR))
+	                while(entry = readdir(pDIR))
+					{
+						 if(strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 )
 						{
-		                        if(strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 )
-		                        	res.insert(res.end(),directory + "\\" + entry->d_name);
-		                }
-		                closedir(pDIR);
+							string path = directory + "\\" + entry->d_name;
+							if(dir::isfile(path.c_str()))
+							{
+		                       	res.insert(res.end(),path);
+		                	}
+		                	else
+		                	{
+		                		if(recursive)
+		                		{
+		                			vector<string>subfiles = dir::getFiles(path, true);
+		                			res.insert(res.begin(), subfiles.begin(), subfiles.end());
+								}
+							}
+						}
+	                }
+	                closedir(pDIR);
         		}
         		return res;
+			}
+			
+			static int isfile(const char* name)
+			{
+			    DIR* directory = opendir(name);
+			
+			    if(directory != NULL)
+			    {
+				    closedir(directory);
+				    return 0;
+			    }
+			
+			    if(errno == ENOTDIR)
+			    {
+			    	return 1;
+			    }
+			
+			    return -1;
 			}
 	};
 }
