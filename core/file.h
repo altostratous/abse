@@ -50,7 +50,7 @@ namespace disk
 				this->filenames = filenames;
 			}
 			
-			void iterate(wanalysis& p)
+			void iterate(analysis& p)
 			{
 				vector<string>::iterator i = filenames.begin();
 				while(i != filenames.end())

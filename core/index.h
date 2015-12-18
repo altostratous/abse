@@ -16,7 +16,13 @@ using namespace std;
 
 namespace index
 {
-	class wanalysis
+	class analysis
+	{
+		public:
+			virtual string process(string input) = 0;
+	};
+	
+	class wanalysis : public analysis
 	{
 		private:
 			vector<occurrance> occurrances;

@@ -13,7 +13,7 @@ namespace disk
 	*/
 	class config
 	{
-		/* TODO (asgari#2#): Implement it */
-		
+		private:
+			
 	}
 }
