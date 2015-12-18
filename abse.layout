@@ -62,7 +62,7 @@ LeftChar=1
 Open=1
 Top=1
 [Editors]
-Order=10,4,0
+Order=
 Focused=0
 [Editor_9]
 CursorCol=47

@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=1
 CompilerSettings=0000000000000000001000000
-UnitCount=11
+UnitCount=12
 
 [VersionInfo]
 Major=1
@@ -159,4 +159,13 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 CompileCpp=1
+
+[Unit12]
+FileName=abse.config
+Folder=
+Compile=0
+Link=0
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
