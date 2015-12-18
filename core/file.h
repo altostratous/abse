@@ -88,7 +88,7 @@ namespace disk
 						 if(strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0 )
 						{
 							string path = directory + "\\" + entry->d_name;
-							if(dir::isfile(path.c_str()))
+							if(dir::isFile(path.c_str()))
 							{
 		                       	res.insert(res.end(),path);
 		                	}
@@ -107,7 +107,7 @@ namespace disk
         		return res;
 			}
 			
-			static int isfile(const char* name)
+			static int isFile(const char* name)
 			{
 			    DIR* directory = opendir(name);
 			

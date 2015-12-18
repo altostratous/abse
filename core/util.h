@@ -6,3 +6,4 @@
 #include "preprocess.h"
 #include "index.h"
 #include "file.h"
+#include "config.h"
