@@ -108,6 +108,11 @@ namespace disk
 				}
 				return word;
 			}
+			
+			string getFileNameById(int id)
+			{
+				return filenames[id];
+			}
 	};
 	
 	/*

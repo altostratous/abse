@@ -53,6 +53,31 @@ namespace index
 				return *(occurrances.begin() + id);
 			}
 	};
+	
+	
+	/*
+		This class provides replacing a word with another
+		in the word sequence.
+	*/
+	class replacer : public analysis
+	{
+		private:
+			string src, dst;
+		public:
+			string process(string input, occurrance o)
+			{
+				if(input == src)
+					return dst+" ";
+				else
+					return input+" ";
+			}
+			
+			replacer(string tofind, string toreplace)
+			{
+				this->src = tofind;
+				this->dst = toreplace;
+			}
+	};
 }
 
 #endif

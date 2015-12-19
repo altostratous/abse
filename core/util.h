@@ -7,3 +7,4 @@
 #include "index.h"
 #include "file.h"
 #include "config.h"
+#include "ui.h"
