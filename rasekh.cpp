@@ -13,8 +13,8 @@ string replace(string input, string src, string dst)
 
 
 // START of the porter code
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstrnig>
  
 #define TRUE 1
 #define FALSE 0
