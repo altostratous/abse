@@ -6,6 +6,7 @@
 
 #include<iostream>
 #include<vector>
+#include <windows.h>
 
 #include "util.h"
 
@@ -15,6 +16,64 @@ using namespace std;
 
 namespace ui
 {
+	
+	// Adding colors to consule. Copied from here: 
+	// http://www.codeproject.com/Articles/16431/Add-color-to-your-std-cout
+	inline std::ostream& blue(std::ostream &s)
+	{
+	    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
+	    SetConsoleTextAttribute(hStdout, FOREGROUND_BLUE
+	              |FOREGROUND_GREEN|FOREGROUND_INTENSITY);
+	    return s;
+	}
+	
+	inline std::ostream& red(std::ostream &s)
+	{
+	    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
+	    SetConsoleTextAttribute(hStdout, 
+	                FOREGROUND_RED|FOREGROUND_INTENSITY);
+	    return s;
+	}
+	
+	inline std::ostream& green(std::ostream &s)
+	{
+	    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
+	    SetConsoleTextAttribute(hStdout, 
+	              FOREGROUND_GREEN|FOREGROUND_INTENSITY);
+	    return s;
+	}
+	
+	inline std::ostream& yellow(std::ostream &s)
+	{
+	    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
+	    SetConsoleTextAttribute(hStdout, 
+	         FOREGROUND_GREEN|FOREGROUND_RED|FOREGROUND_INTENSITY);
+	    return s;
+	}
+	
+	inline std::ostream& white(std::ostream &s)
+	{
+	    HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
+	    SetConsoleTextAttribute(hStdout, 
+	       FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
+	    return s;
+	}
+	
+	struct color {
+	    color(WORD attribute):m_color(attribute){};
+	    WORD m_color;
+	};
+	
+	template <class _Elem, class _Traits>
+	std::basic_ostream<_Elem,_Traits>& 
+	      operator<<(std::basic_ostream<_Elem,_Traits>& i, color& c)
+	{
+	    HANDLE hStdout=GetStdHandle(STD_OUTPUT_HANDLE); 
+	    SetConsoleTextAttribute(hStdout,c.m_color);
+	    return i;
+	}
+	
+	
 	/*
 		ghabeliate tanzim option haye mokhtalef
 		ghabeliate anjame karhaye mokhtalef az jomleh index va search
@@ -33,16 +92,117 @@ namespace ui
 		private:
 			config conf;
 			bool pleaseexit;
-			string currentfile;
 			// commands
 			exit()
 			{
 				pleaseexit = true;
 			}
+			
+			about()
+			{
+				cout<<blue<<"                          *** In the name of Allah ***"<<endl;
+				cout<<"Welcome to ABSE."<<endl;
+				cout<<yellow<<"Authors:"<<white<<endl;
+				cout<<"\tAli Rasekh, CE Sharif University of Technology."<<endl;
+				cout<<"\tAli Asgari, CE Sharif University of Technology."<<endl<<endl;
+			}
+			
+			help()
+			{
+				cout<<yellow<<"Instructions:"<<blue<<endl;
+				cout<<"current "<<yellow<<"[filename]"<<endl;
+				cout<<blue<<"count "<<yellow<<"[word]"<<endl;
+				cout<<blue<<"replace "<<yellow<<"[word-to-find] [word-to-replace] [output-filename]"<<endl;
+				cout<<blue<<"find "<<yellow<<"[word]"<<endl;
+				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
+				cout<<blue<<"save "<<endl;
+				cout<<blue<<"exit"<<endl;
+				cout<<"help"<<endl;
+				cout<<"about"<<white<<endl;
+				
+			}
+			
+			find()
+			{
+				string word;
+				cin>>word;
+				
+				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
+				f.setWordSeperators(conf.getString("WordSeperators"));
+				wanalysis wa(word);
+				f.iterate(wa);
+				cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
+				for(int i = 0; i < wa.getCount(); i++)
+				{
+					occurrance o1 = wa.getOccurrance(i);
+					occurrance o2 = o1;
+					o1.index -= 3*o1.length;
+					o1.length *= 3;
+					o2.index += o2.length;
+					o2.length *= 3;
+					cout<<yellow<<"File: "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+					cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
+				}
+			}
+			
+			replace()
+			{
+				string word;
+				string toreplace;
+				string output;
+				cin>>word;
+				cin>>toreplace;
+				cin>>output;
+				vector<string> files;
+				files.insert(files.begin(), conf.getString("CurrentFile"));
+				file f(files);
+				f.setWordSeperators(conf.getString("WordSeperators"));
+				replacer rep(word, toreplace);
+				f.iterate(rep, output);
+			}
+			
+			count()
+			{
+				string word;
+				cin>>word;
+				vector<string> files;
+				files.insert(files.begin(), conf.getString("CurrentFile"));
+				file f(files);
+				f.setWordSeperators(conf.getString("WordSeperators"));
+				wanalysis wa(word);
+				f.iterate(wa);
+				cout<<"Found "<<yellow<<wa.getCount()<<white<<" instances."<<endl;
+			}
+			
+			current()
+			{
+				string filename;
+				cin>>filename;
+				conf.add("CurrentFile", filename);
+				cout<<green<<"Current file set successfully."<<white<<endl;
+			}
+			
+			configure()
+			{
+				string key;
+				string value;
+				cin>>key;
+				cin>>value;
+				conf.add(key, value);
+				cout<<green<<"Configuration set successfully."<<white<<endl;
+			}
+			
+			save()
+			{
+				conf.save();
+				cout<<green<<"Configurations saved successfully."<<white<<endl;
+			}
 		public:
 			cmdui()
 			{
 				pleaseexit = false;
+				about();
+				help();
 			}
 			
 			void start()
@@ -61,56 +221,53 @@ namespace ui
 					
 					if(command == "current")
 					{
-						cin>>currentfile;
+						current();
 						continue;
 					}
 					
 					if(command == "count")
 					{
-						string word;
-						cin>>word;
-						vector<string> files;
-						files.insert(files.begin(), currentfile);
-						file f(files);
-						wanalysis wa(word);
-						f.iterate(wa);
-						cout<<"Found "<<wa.getCount()<<" instances.";
+						count();
+						continue;
 					}
 					
 					if(command == "replace")
 					{
-						string word;
-						string toreplace;
-						string output;
-						cin>>word;
-						cin>>toreplace;
-						cin>>output;
-						vector<string> files;
-						files.insert(files.begin(), currentfile);
-						file f(files);
-						replacer rep(word, toreplace);
-						f.iterate(rep, output);
+						replace();
+						continue;
 					}
 					
 					if(command == "find")
 					{
-						string word;
-						cin>>word;
-						
-						file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
-						f.setWordSeperators(conf.getString("WordSeperators"));
-						wanalysis wa(word);
-						f.iterate(wa);
-						cout<<"Found "<<wa.getCount()<<" times.\n";
-						for(int i = 0; i < wa.getCount(); i++)
-						{
-							occurrance o = wa.getOccurrance(i);
-							o.index -= 3*o.length;
-							o.length *= 7;
-							cout<<"File: "<<f.getFileNameById(o.file_id)<<"\n"<<"Paragraph#"<<o.paragraph_id<<endl;
-							cout<<"..."<<f.look(o)<<"..."<<endl;
-						}
+						find();
+						continue;
 					}
+					
+					if(command == "help")
+					{
+						help();
+						continue;
+					}
+					
+					if(command == "about")
+					{
+						about();
+						continue;
+					}
+					
+					if(command == "save")
+					{
+						save();
+						continue;
+					}
+					
+					if(command == "config")
+					{
+						configure();
+						continue;
+					}
+					
+					cout<<red<<"No such command: "<<command<<endl<<white;
 				}
 			}
 	};
