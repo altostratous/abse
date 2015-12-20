@@ -41,6 +41,28 @@ namespace disk
 		private:
 			vector<string>filenames;
 			string wordSeperators;
+			
+			void waitcursor(int delay=100)
+			{
+				static int cursor=0;
+				int r = cursor / delay;
+				switch(r)
+				{
+					case 0:
+						cout<<"\b\\";
+						break;
+					case 1:
+						cout<<"\b|";
+						break;
+					case 2:
+						cout<<"\b/";
+						break;
+					case 3:
+						cout<<"\b-";
+						break;
+				}
+				cursor = (cursor + 1) % (4*delay);
+			}
 		public:
 			file(vector<string>filenames)
 			{
@@ -87,7 +109,9 @@ namespace disk
 					}
 					fin.close();
 					++i;
+					waitcursor();
 				}
+				cout<<"\b";
 				if(output != "")
 				{
 					fout.close();
@@ -108,6 +132,7 @@ namespace disk
 				}
 				return word;
 			}
+		    
 			
 			string getFileNameById(int id)
 			{

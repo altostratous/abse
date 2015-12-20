@@ -114,6 +114,7 @@ namespace ui
 				cout<<blue<<"count "<<yellow<<"[word]"<<endl;
 				cout<<blue<<"replace "<<yellow<<"[word-to-find] [word-to-replace] [output-filename]"<<endl;
 				cout<<blue<<"find "<<yellow<<"[word]"<<endl;
+				cout<<blue<<"log "<<yellow<<"[filename]"<<endl;
 				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
 				cout<<blue<<"save "<<endl;
 				cout<<blue<<"exit"<<endl;
@@ -124,6 +125,10 @@ namespace ui
 			
 			find()
 			{
+				ofstream fout;
+				if(conf.isset("LogFile"))
+					fout.open(conf.getString("LogFile").c_str());
+				
 				string word;
 				cin>>word;
 				
@@ -142,7 +147,14 @@ namespace ui
 					o2.length *= 3;
 					cout<<yellow<<"File: "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
 					cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
+					if(conf.isset("LogFile"))
+					{
+						fout<<"File: "<<f.getFileNameById(o1.file_id)<<"\n"<<"Paragraph"<<"#"<<o1.paragraph_id<<endl;
+						fout<<"..."<<f.look(o1)<<word<<f.look(o2)<<"..."<<endl;
+					}
 				}
+				if(conf.isset("LogFile"))
+					fout.close();
 			}
 			
 			replace()
@@ -161,8 +173,13 @@ namespace ui
 				f.iterate(rep, output);
 			}
 			
-			count()
+			count(string output = "")
 			{
+				ofstream fout;
+				if(output!="")
+				{
+					fout.open(output.c_str());
+				}
 				string word;
 				cin>>word;
 				vector<string> files;
@@ -197,6 +214,14 @@ namespace ui
 				conf.save();
 				cout<<green<<"Configurations saved successfully."<<white<<endl;
 			}
+			
+			log()
+			{
+				string filename;
+				cin>>filename;
+				conf.add("LogFile", filename);
+				cout<<green<<"Configurations saved successfully."<<white<<endl;
+			}
 		public:
 			cmdui()
 			{
@@ -204,6 +229,7 @@ namespace ui
 				about();
 				help();
 			}
+			
 			
 			void start()
 			{
@@ -264,6 +290,12 @@ namespace ui
 					if(command == "config")
 					{
 						configure();
+						continue;
+					}
+					
+					if(command == "log")
+					{
+						log();
 						continue;
 					}
 					

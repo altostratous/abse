@@ -74,6 +74,11 @@ namespace disk
 				}
 			}
 			
+			bool isset(string key)
+			{
+				return properties.count(key);
+			}
+			
 			string getString(string key)
 			{
 				return properties[key];
