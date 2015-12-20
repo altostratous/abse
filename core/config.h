@@ -86,6 +86,10 @@ namespace disk
 			
 			void add(string key, string value)
 			{
+				if(isset(key))
+				{
+					properties[key] = value;
+				}
 				if(key.length() > 0)
 					properties.insert(make_pair(key, value));
 			}

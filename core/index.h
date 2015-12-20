@@ -6,10 +6,12 @@
 #define ABSE_INDEX 1
 
 #include<vector>
+#include<set>
 #include<string>
 
 #include "ds.h"
 #include "file.h"
+#include "language.h"
 
 using namespace ds;
 using namespace std;
@@ -76,6 +78,81 @@ namespace index
 			{
 				this->src = tofind;
 				this->dst = toreplace;
+			}
+	};
+	
+	class stemmer : public analysis
+	{
+		public:
+			string process(string input, occurrance o)
+			{
+				return stem(input);
+			}
+	};
+	
+	class lowerer : public analysis
+	{
+		public:
+			string process(string input, occurrance o)
+			{
+				for(int i = 0; i < input.length(); i++)
+				{
+					input[i] = tolower(input[i]);
+				}
+				return input;
+			}
+	};
+	
+	class removestopwords : public analysis
+	{
+		private:
+			set<string>stopwords;
+		public:
+			string process(string input, occurrance o)
+			{
+				if(stopwords.find(input) != stopwords.end())
+				{
+					return "";
+				}
+				else
+				{
+					return input;
+				}
+			}
+			
+			removestopwords(string stopwords)
+			{
+				string word = "";
+				for(int i = 0; i < stopwords.length(); i++)
+				{
+					if(stopwords[i] == ' ')
+					{
+						this->stopwords.insert(this->stopwords.end(), word);
+						word = "";
+					}
+					else
+					{
+						word += stopwords[i];
+					}
+				} 
+			}
+	};
+	
+	class normalizer : public analysis
+	{
+		private:
+			string stopwords;
+		public:
+			normalizer(string stopwords)
+			{
+				this->stopwords = stopwords;
+			}
+			string process(string input, occurrance o)
+			{
+				lowerer l;
+				stemmer s;
+				removestopwords r(stopwords);
+				return r.process(s.process(l.process(input, o), o), o) + " ";
 			}
 	};
 }

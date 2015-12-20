@@ -115,6 +115,7 @@ namespace ui
 				cout<<blue<<"replace "<<yellow<<"[word-to-find] [word-to-replace] [output-filename]"<<endl;
 				cout<<blue<<"find "<<yellow<<"[word]"<<endl;
 				cout<<blue<<"log "<<yellow<<"[filename]"<<endl;
+				cout<<blue<<"normalize "<<yellow<<"[output-file]"<<endl;
 				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
 				cout<<blue<<"save "<<endl;
 				cout<<blue<<"exit"<<endl;
@@ -222,6 +223,19 @@ namespace ui
 				conf.add("LogFile", filename);
 				cout<<green<<"Configurations saved successfully."<<white<<endl;
 			}
+			
+			normalize(void)
+			{
+				normalizer n(conf.getString("StopWords"));
+				
+				string ofile;
+				cin>> ofile;
+				
+				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
+				f.setWordSeperators(conf.getString("WordSeperators"));
+				f.iterate(n, ofile);
+				cout<<green<<"Normalized successfully!"<<white<<endl;
+			}
 		public:
 			cmdui()
 			{
@@ -296,6 +310,12 @@ namespace ui
 					if(command == "log")
 					{
 						log();
+						continue;
+					}
+					
+					if(command == "normalize")
+					{
+						normalize();
 						continue;
 					}
 					

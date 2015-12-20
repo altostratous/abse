@@ -4,6 +4,9 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <string>
+
+#include "index.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -17,7 +20,9 @@
    Note that only lower case sequences are stemmed. Forcing to lower case
    should be done before stem(...) is called.
 */
-namespace lang
+using namespace std;
+
+namespace index
 {
 	
 	static char * b;       /* buffer for word to be stemmed */
@@ -103,7 +108,7 @@ namespace lang
 	 
 	/* ends(s) is TRUE <=> k0,...k ends with the string s. */
 	 
-	int ends(char * s)
+	int ends(const char * s)
 	{  int length = s[0];
 	   if (s[length] != b[k]) return FALSE; /* tiny speed-up */
 	   if (length > k-k0+1) return FALSE;
@@ -115,7 +120,7 @@ namespace lang
 	/* setto(s) sets (j+1),...k to the characters in the string s, readjusting
 	   k. */
 	 
-	void setto(char * s)
+	void setto(const char * s)
 	{  int length = s[0];
 	   memmove(b+j+1,s+1,length);
 	   k = j+length;
@@ -123,7 +128,7 @@ namespace lang
 	 
 	/* r(s) is used further down. */
 	 
-	void r(char * s) { if (m() > 0) setto(s); }
+	void r(const char * s) { if (m() > 0) setto(s); }
 	 
 	/* step1ab() gets rid of plurals and -ed or -ing. e.g.
 	 
@@ -355,5 +360,16 @@ namespace lang
 	   return 0;
 	}
 	*/
+	string stem(string input)
+	{
+		char* p = (char *) malloc(i_max+1);
+		p[input.length()] = '\000';
+		for(int i = 0; i < input.length(); i++)
+			p[i] = input[i];		
+		p[stem(p, 0, input.length()-1) + 1] = 0;
+		input = p;
+		free(p);
+		return input;
+	}
 }
 #endif
