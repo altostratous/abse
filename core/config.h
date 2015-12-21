@@ -44,7 +44,7 @@ namespace disk
 				{
 					val += input[i];
 				}
-				properties.insert(make_pair(key, val));
+				add(key, val);
 			}
 		public:
 			config()
@@ -74,9 +74,31 @@ namespace disk
 				}
 			}
 			
+			bool isset(string key)
+			{
+				return properties.count(key);
+			}
+			
 			string getString(string key)
 			{
 				return properties[key];
+			}
+			
+			void add(string key, string value)
+			{
+				if(key.length() > 0)
+					properties.insert(make_pair(key, value));
+			}
+			
+			void save()
+			{
+				ofstream fout(path.c_str());
+				map<string, string>::iterator i;
+				for(i = properties.begin(); i != properties.end(); i++)
+				{
+					fout<<(*i).first<<":"<<(*i).second<<endl;
+				}
+				fout.close();
 			}
 	};
 }

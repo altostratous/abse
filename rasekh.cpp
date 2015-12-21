@@ -1,7 +1,6 @@
 #include<iostream>
 #include<string>
-using namespace std;
-
+#ifdef compileit
 string replace(string input, string src, string dst)
 {
 	if(input == src)
@@ -9,6 +8,7 @@ string replace(string input, string src, string dst)
 	else
 		return input;
 }
+#endif
 
 
 
