@@ -45,23 +45,27 @@ namespace disk
 			void waitcursor(int delay=100)
 			{
 				static int cursor=0;
-				int r = cursor / delay;
-				switch(r)
-				{
-					case 0:
-						cout<<"\b\\";
-						break;
-					case 1:
-						cout<<"\b|";
-						break;
-					case 2:
-						cout<<"\b/";
-						break;
-					case 3:
-						cout<<"\b-";
-						break;
-				}
+				int rl = cursor / delay;
 				cursor = (cursor + 1) % (4*delay);
+				int rn = cursor / delay;
+				if(rn != rl)
+				{
+					switch(rn)
+					{
+						case 0:
+							cout<<"\b\\";
+							break;
+						case 1:
+							cout<<"\b|";
+							break;
+						case 2:
+							cout<<"\b/";
+							break;
+						case 3:
+							cout<<"\b-";
+							break;
+					}
+				}
 			}
 		public:
 			file(vector<string>filenames)
@@ -75,54 +79,62 @@ namespace disk
 				wordSeperators = ws;
 			}
 			
-			void iterate(analysis& p, string output="")
+			void iterate(analysis& p, string outdir="", int fileidstart = 0)
 			{
 				ofstream fout;
-				if(output != "")
-				{
-					fout.open(output.c_str());
-				}
 				vector<string>::iterator i = filenames.begin();
 				while(i != filenames.end())
 				{
+					int index = 0;
+					if(outdir != "")
+					{
+						fout.open((outdir+"\\"+to_string(fileidstart)).c_str());
+						fileidstart++;
+					}
 					ifstream fin((*i).c_str());
+					
 					int paragraph_id = 0;
 					string word = "";
 					while(!fin.eof())
 					{
 						char c;
 						fin.get(c);
+						index++;
 						if(wordSeperators.find(c)==string::npos && c!='\n')
 							word += c;
 						else
 						{
 							if(c=='\n')
+							{
 								paragraph_id++;
+								fout<<endl;
+							}
 							occurrance o;
 							o.file_id = distance(filenames.begin(), i);
-							o.index = ((int)fin.tellg() - word.length());
+							o.index = index - word.length() - 1;
 							o.length = word.length();
 							o.paragraph_id = paragraph_id;
-							fout << p.process(word, o);
+							fout << p.process(word, o) << " ";
 							word = "";
 						}
 					}
 					fin.close();
+					if(outdir != "")
+					{
+						fout.close();
+					}
 					++i;
-					waitcursor();
+				    waitcursor();
 				}
 				cout<<"\b";
-				if(output != "")
-				{
-					fout.close();
-				}
 			}
 			
 			string look(occurrance o)
 			{
 				string path = *(filenames.begin() + o.file_id);
 				ifstream fin(path.c_str());
-				fin.seekg(o.index -1, ios::beg);
+				for(int i = 0; i < o.index; i++)
+					fin.get();
 				string word;
 				char c;
 				for(int i = 0; i < o.length; i++)
@@ -137,6 +149,16 @@ namespace disk
 			string getFileNameById(int id)
 			{
 				return filenames[id];
+			}
+			
+			int getFilesCount()
+			{
+				return filenames.size();
+			}
+			
+			vector<string> getFilenames()
+			{
+				return filenames;
 			}
 	};
 	
@@ -195,6 +217,9 @@ namespace disk
 			    return -1;
 			}
 	};
+	
 }
+
+#include "multithread.h"
 
 #endif

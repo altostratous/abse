@@ -4,14 +4,14 @@
 CPP      = g++.exe -D__DEBUG__
 CC       = gcc.exe -D__DEBUG__
 WINDRES  = windres.exe
-OBJ      = output/phase1/main.o rasekh.o rasekh.o
-LINKOBJ  = output/phase1/main.o rasekh.o rasekh.o
+OBJ      = output/phase1/main.o rasekh.o rasekh.o core/porter2_stemmer.o
+LINKOBJ  = output/phase1/main.o rasekh.o rasekh.o core/porter2_stemmer.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -g3
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
 BIN      = abse.exe
-CXXFLAGS = $(CXXINCS) -g3
-CFLAGS   = $(INCS) -g3
+CXXFLAGS = $(CXXINCS) -g3 -std=c++11
+CFLAGS   = $(INCS) -g3 -std=c++11
 RM       = rm.exe -f
 
 .PHONY: all all-before all-after clean clean-custom
@@ -29,3 +29,6 @@ output/phase1/main.o: output/phase1/main.cpp
 
 rasekh.o: rasekh.cpp
 	$(CPP) -c rasekh.cpp -o rasekh.o $(CXXFLAGS)
+
+core/porter2_stemmer.o: core/porter2_stemmer.cpp
+	$(CPP) -c core/porter2_stemmer.cpp -o core/porter2_stemmer.o $(CXXFLAGS)

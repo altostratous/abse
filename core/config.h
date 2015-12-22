@@ -104,6 +104,16 @@ namespace disk
 				}
 				fout.close();
 			}
+			
+			int getInteger(string key)
+			{
+				return 10;
+				char* str = (char*) malloc(getString(key).length());
+				strcpy(str, getString(key).c_str());
+				int res =  atoi(str);
+				free (str);
+				return res;
+			}
 	};
 }
 #endif

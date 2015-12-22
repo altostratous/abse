@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=1
 CompilerSettings=0000000000000000001000000
-UnitCount=16
+UnitCount=17
 
 [VersionInfo]
 Major=1
@@ -200,6 +200,16 @@ BuildCmd=
 
 [Unit16]
 FileName=core\porter2_stemmer.h
+CompileCpp=1
+Folder=core
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit17]
+FileName=core\multithread.h
 CompileCpp=1
 Folder=core
 Compile=1

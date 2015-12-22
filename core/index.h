@@ -42,7 +42,7 @@ namespace index
 				{
 					occurrances.insert(occurrances.end(), o);
 				}
-				return input + " ";
+				return input;
 			}
 			
 			wanalysis(string word)
@@ -69,9 +69,9 @@ namespace index
 			string process(string input, occurrance o)
 			{
 				if(input == src)
-					return dst+" ";
+					return dst;
 				else
-					return input+" ";
+					return input;
 			}
 			
 			replacer(string tofind, string toreplace)
@@ -152,7 +152,7 @@ namespace index
 				lowerer l;
 				stemmer s;
 				removestopwords r(stopwords);
-				return r.process(s.process(l.process(input, o), o), o) + " ";
+				return r.process(s.process(l.process(input, o), o), o);
 			}
 	};
 }

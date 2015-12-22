@@ -9,3 +9,4 @@
 #include "config.h"
 #include "ui.h"
 #include "language.h"
+#include "multithread.h"

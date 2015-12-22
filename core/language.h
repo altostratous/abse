@@ -33,6 +33,6 @@ namespace index
 				Porter2Stemmer::stem(word);
 				return word;
 			}
-	}
+	};
 }
 #endif

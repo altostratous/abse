@@ -115,7 +115,7 @@ namespace ui
 				cout<<blue<<"replace "<<yellow<<"[word-to-find] [word-to-replace] [output-filename]"<<endl;
 				cout<<blue<<"find "<<yellow<<"[word]"<<endl;
 				cout<<blue<<"log "<<yellow<<"[filename]"<<endl;
-				cout<<blue<<"normalize "<<yellow<<"[output-file]"<<endl;
+				cout<<blue<<"normalize "<<yellow<<"[output-dir]"<<endl;
 				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
 				cout<<blue<<"save "<<endl;
 				cout<<blue<<"exit"<<endl;
@@ -228,12 +228,12 @@ namespace ui
 			{
 				normalizer n(conf.getString("StopWords"));
 				
-				string ofile;
-				cin>> ofile;
+				string odir;
+				cin>> odir;
 				
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
 				f.setWordSeperators(conf.getString("WordSeperators"));
-				f.iterate(n, ofile);
+				fasterate(f, odir, n, conf.getInteger("ThreadsCount"));
 				cout<<green<<"Normalized successfully!"<<white<<endl;
 			}
 		public:
