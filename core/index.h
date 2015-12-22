@@ -86,7 +86,7 @@ namespace index
 		public:
 			string process(string input, occurrance o)
 			{
-				return stem(input);
+				return porter::stem(input);
 			}
 	};
 	
