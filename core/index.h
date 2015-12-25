@@ -59,7 +59,7 @@ namespace index
 			merge(wanalysis* wa)
 			{
 				vector<occurrance> ocs = wa->getOccurrances();
-				occurrances.insert(ocs.begin(), ocs.begin(), ocs.end());
+				occurrances.insert(occurrances.end(), ocs.begin(), ocs.end());
 			}
 			
 			string getWord()
@@ -190,7 +190,7 @@ namespace ds
 namespace ds
 {
 	
-	class watable
+	class watable : public analysis
 	{
 		private:
 			hash<string>hash_str;
@@ -206,23 +206,26 @@ namespace ds
 			}
 			wanalysis* find(string word) 
 			{
-				int h = hash_str(word);
+				unsigned long long int h = hash_str(word);
 				int a = 0;
-				int b = datarows.size();
+				int b = datarows.size()-1;
 				int i = (a+b)/2;
 				while(datarows[i].hash != h)
 				{
-					if(a == b)
+					i = (a+b)/2;
+					if((b - a) <= 1)
 						return NULL;
 					if(datarows[i].hash < h)
 					{
-						b = i;
+						a = i;
 					}
 					else
 					{
-						a = i;
+						b = i;
 					}
 				}
+				/* TODO (rasekh#1#): Manage hash collision */
+				
 				return datarows[i].wa;
 			}
 			
@@ -238,31 +241,51 @@ namespace ds
 				sort();
 			}
 			
+			int getWordCount()
+			{
+				/* TODO (rasekh#1#): Manage hash collision */
+				
+				return datarows.size();
+			}
+			
 			void insert(wanalysis* wa)
 			{	
-				int h = hash_str(wa->getWord());
+				// the first insertion
+				if(datarows.size() == 0)
+				{
+					datarow dr;
+					dr.hash = hash_str(wa->getWord()); 
+					dr.wa = wa;
+					datarows.push_back(dr);
+					return;
+				}
+				unsigned long long int h = hash_str(wa->getWord());
 				int a = 0;
-				int b = datarows.size();
+				int b = datarows.size()-1;
 				int i = (a+b)/2;
 				while(datarows[i].hash != h)
 				{
-					if(a == b)
+					i = (a+b)/2;
+					if((b - a) <= 1)
 					{
 						datarow dr;
 						dr.hash = hash_str(wa->getWord()); 
-						dr.wa = &(wa[i]);
-						datarows.insert(datarows.begin()+a, dr);
+						dr.wa = wa;
+						datarows.insert(datarows.begin()+a+1, dr);
 						return;
 					}
 					if(datarows[i].hash < h)
 					{
-						b = i;
+						a = i;
 					}
 					else
 					{
-						a = i;
+						b = i;
 					}
 				}
+				
+				/* TODO (rasekh#1#): Manage the hash colision here */
+				
 				datarows[i].wa->merge(wa);
 			}
 			
@@ -275,6 +298,19 @@ namespace ds
 			watable(string path)
 			{
 				cout<<"not implemented"<<endl;
+			}
+			
+			watable()
+			{
+				
+			}
+			
+			string process(string word, occurrance o)
+			{
+				wanalysis* wa = new wanalysis(word);
+				wa->process(word, o);
+				insert(wa);
+				return word;
 			}
 	};
 }

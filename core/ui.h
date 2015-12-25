@@ -91,6 +91,7 @@ namespace ui
 	{
 		private:
 			config conf;
+			watable wat;
 			bool pleaseexit;
 			// commands
 			exit()
@@ -117,6 +118,7 @@ namespace ui
 				cout<<blue<<"log "<<yellow<<"[filename]"<<endl;
 				cout<<blue<<"normalize "<<yellow<<"[output-dir]"<<endl;
 				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
+				cout<<blue<<"index"<<endl;
 				cout<<blue<<"save "<<endl;
 				cout<<blue<<"exit"<<endl;
 				cout<<"help"<<endl;
@@ -236,6 +238,17 @@ namespace ui
 				fasterate(f, odir, n, conf.getInteger("ThreadsCount"));
 				cout<<green<<"Normalized successfully!"<<white<<endl;
 			}
+			
+			index()
+			{
+				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
+				f.setWordSeperators(conf.getString("WordSeperators"));
+				/* TODO (asgari#1#): Implement multithreaded version */
+				
+				//fasterate(f, "", wat, conf.getInteger("ThreadsCount"));
+				f.iterate(wat);
+				cout<<green<<"Indexed the files successfully!"<<white<<endl;
+			}
 		public:
 			cmdui()
 			{
@@ -316,6 +329,12 @@ namespace ui
 					if(command == "normalize")
 					{
 						normalize();
+						continue;
+					}
+					
+					if(command == "index")
+					{
+						index();
 						continue;
 					}
 					

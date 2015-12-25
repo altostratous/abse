@@ -109,13 +109,16 @@ namespace disk
 								paragraph_id++;
 								fout<<endl;
 							}
-							occurrance o;
-							o.file_id = distance(filenames.begin(), i);
-							o.index = index - word.length() - 1;
-							o.length = word.length();
-							o.paragraph_id = paragraph_id;
-							fout << p.process(word, o) << " ";
-							word = "";
+							if(word.length() > 0)
+							{
+								occurrance o;
+								o.file_id = distance(filenames.begin(), i);
+								o.index = index - word.length() - 1;
+								o.length = word.length();
+								o.paragraph_id = paragraph_id;
+								fout << p.process(word, o) << " ";
+								word = "";
+							}
 						}
 					}
 					fin.close();
