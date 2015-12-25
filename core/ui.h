@@ -114,7 +114,7 @@ namespace ui
 				cout<<"current "<<yellow<<"[filename]"<<endl;
 				cout<<blue<<"count "<<yellow<<"[word]"<<endl;
 				cout<<blue<<"replace "<<yellow<<"[word-to-find] [word-to-replace] [output-filename]"<<endl;
-				cout<<blue<<"find "<<yellow<<"[word]"<<endl;
+				cout<<blue<<"find "<<yellow<<"[word]"<<" /f"<<endl;
 				cout<<blue<<"log "<<yellow<<"[filename]"<<endl;
 				cout<<blue<<"normalize "<<yellow<<"[output-dir]"<<endl;
 				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
@@ -138,7 +138,18 @@ namespace ui
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
 				f.setWordSeperators(conf.getString("WordSeperators"));
 				wanalysis wa(word);
-				f.iterate(wa);
+				string arguments;
+				/* TODO (asgari#1#): catch user faults */
+				
+				getline(cin, arguments);
+				if(arguments == "")
+				{
+					// search in the index
+					wa = *(wat.find(word));
+				}
+				else
+					if(arguments == " /f")
+						f.iterate(wa);
 				cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
 				for(int i = 0; i < wa.getCount(); i++)
 				{
@@ -178,6 +189,10 @@ namespace ui
 			
 			count(string output = "")
 			{
+				/* TODO (asgari#1#): add functionallity to count on the ds
+ */
+				
+				
 				ofstream fout;
 				if(output!="")
 				{

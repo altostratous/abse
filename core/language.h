@@ -34,5 +34,9 @@ namespace index
 				return word;
 			}
 	};
+	
+	/* TODO (asgari#1#): Finding nearest words in a dictionarry to a 
+	                     word spelled uncorrectly */
+	
 }
 #endif

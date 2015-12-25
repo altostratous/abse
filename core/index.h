@@ -181,7 +181,7 @@ namespace ds
 	struct datarow
 	{
 		long long hash;
-		int colision;
+		// int colision;
 		wanalysis* wa;
 	};
 	
@@ -214,7 +214,7 @@ namespace ds
 				{
 					i = (a+b)/2;
 					if((b - a) <= 1)
-						return NULL;
+						return new wanalysis(word);
 					if(datarows[i].hash < h)
 					{
 						a = i;
@@ -224,9 +224,21 @@ namespace ds
 						b = i;
 					}
 				}
-				/* TODO (rasekh#1#): Manage hash collision */
 				
-				return datarows[i].wa;
+				
+				for(int j = 0; datarows[i + j].hash == h; j--)
+				{
+					if(datarows[i + j].wa->getWord() == word)
+						return datarows[i + j].wa;
+				}
+				
+				for(int j = 0; datarows[i + j].hash == h; j++)
+				{
+					if(datarows[i + j].wa->getWord() == word)
+						return datarows[i + j].wa;
+				}
+				
+				return new wanalysis(word);
 			}
 			
 			watable(vector<wanalysis>wa)
@@ -284,21 +296,34 @@ namespace ds
 					}
 				}
 				
-				/* TODO (rasekh#1#): Manage the hash colision here */
-				
-				datarows[i].wa->merge(wa);
+				if(datarows[i].wa->getWord() == wa->getWord())
+					datarows[i].wa->merge(wa);
+				else
+				{
+					datarow dr;
+					dr.hash = hash_str(wa->getWord()); 
+					dr.wa = wa;
+					datarows.insert(datarows.begin()+i+1, dr);
+					return;
+				}
 			}
 			
 			
 			save(string path)
 			{
-				cout<<"not implemented"<<endl;
+				/* TODO (rasekh#1#): Save the ds in a file */
+				
 			}
 			
 			watable(string path)
 			{
-				cout<<"not implemented"<<endl;
+				/* TODO (rasekh#1#): load the ds from the file
+ */
+				
 			}
+			
+			/* TODO (rasekh#1#): Get the dictionary from words */
+			
 			
 			watable()
 			{
