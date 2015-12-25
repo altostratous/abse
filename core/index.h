@@ -8,6 +8,7 @@
 #include<vector>
 #include<set>
 #include<string>
+#include<algorithm>
 
 #include "ds.h"
 #include "file.h"
@@ -48,6 +49,22 @@ namespace index
 			wanalysis(string word)
 			{
 				this->word = word;
+			}
+			
+			vector<occurrance> getOccurrances()
+			{
+				return occurrances;
+			}
+			
+			merge(wanalysis* wa)
+			{
+				vector<occurrance> ocs = wa->getOccurrances();
+				occurrances.insert(ocs.begin(), ocs.begin(), ocs.end());
+			}
+			
+			string getWord()
+			{
+				return word;
 			}
 			
 			occurrance getOccurrance(int id)
@@ -153,6 +170,111 @@ namespace index
 				stemmer s;
 				removestopwords r(stopwords);
 				return r.process(s.process(l.process(input, o), o), o);
+			}
+	};
+}
+
+using namespace index;
+namespace ds
+{
+	
+	struct datarow
+	{
+		long long hash;
+		int colision;
+		wanalysis* wa;
+	};
+	
+}
+
+namespace ds
+{
+	
+	class watable
+	{
+		private:
+			hash<string>hash_str;
+			vector<datarow> datarows;
+			sort()
+			{
+				std::sort(datarows.begin(), datarows.end(), watable::compHash);
+			}
+		public:
+			static bool compHash(datarow& r1, datarow& r2)
+			{
+				return r1.hash < r2.hash;
+			}
+			wanalysis* find(string word) 
+			{
+				int h = hash_str(word);
+				int a = 0;
+				int b = datarows.size();
+				int i = (a+b)/2;
+				while(datarows[i].hash != h)
+				{
+					if(a == b)
+						return NULL;
+					if(datarows[i].hash < h)
+					{
+						b = i;
+					}
+					else
+					{
+						a = i;
+					}
+				}
+				return datarows[i].wa;
+			}
+			
+			watable(vector<wanalysis>wa)
+			{
+				for(int i = 0; i < wa.size(); i++)
+				{
+					datarow dr;
+					dr.hash = hash_str(wa[i].getWord());
+					dr.wa = &(wa[i]);
+					datarows.push_back(dr);
+				}
+				sort();
+			}
+			
+			void insert(wanalysis* wa)
+			{	
+				int h = hash_str(wa->getWord());
+				int a = 0;
+				int b = datarows.size();
+				int i = (a+b)/2;
+				while(datarows[i].hash != h)
+				{
+					if(a == b)
+					{
+						datarow dr;
+						dr.hash = hash_str(wa->getWord()); 
+						dr.wa = &(wa[i]);
+						datarows.insert(datarows.begin()+a, dr);
+						return;
+					}
+					if(datarows[i].hash < h)
+					{
+						b = i;
+					}
+					else
+					{
+						a = i;
+					}
+				}
+				datarows[i].wa->merge(wa);
+			}
+			
+			
+			save(string path)
+			{
+				cout<<"not implemented"<<endl;
+			}
+			
+			watable(string path)
+			{
+				cout<<"not implemented"<<endl;
 			}
 	};
 }

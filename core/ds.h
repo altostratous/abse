@@ -6,6 +6,10 @@
 #ifndef ABSE_DS
 #define ABSE_DS 1
 
+#include <functional>
+
+using namespace std;
+
 namespace ds
 {
 	/*
@@ -23,6 +27,7 @@ namespace ds
 		int length;
 		int paragraph_id;
 	};
+	
 }
 
 #endif
