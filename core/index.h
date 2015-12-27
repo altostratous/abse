@@ -175,14 +175,15 @@ namespace index
 }
 
 using namespace index;
+
 namespace ds
 {
 	
 	struct datarow
 	{
-		long long hash;
+		int hash;
 		// int colision;
-		wanalysis* wa;
+		vector<wanalysis*> was;
 	};
 	
 }
@@ -193,11 +194,18 @@ namespace ds
 	class watable : public analysis
 	{
 		private:
-			hash<string>hash_str;
+			hash<string>inner_hash;
+			int hashcount;
 			vector<datarow> datarows;
+			/*
 			sort()
 			{
 				std::sort(datarows.begin(), datarows.end(), watable::compHash);
+			}
+			*/
+			int hash_str(string word)
+			{
+				return (inner_hash(word) % hashcount);
 			}
 		public:
 			static bool compHash(datarow& r1, datarow& r2)
@@ -206,43 +214,20 @@ namespace ds
 			}
 			wanalysis* find(string word) 
 			{
-				unsigned long long int h = hash_str(word);
-				int a = 0;
-				int b = datarows.size()-1;
-				int i = (a+b)/2;
-				while(datarows[i].hash != h)
+				int index = hash_str(word);
+				for(int i = 0; i < datarows[index].was.size(); i++)
 				{
-					i = (a+b)/2;
-					if((b - a) <= 1)
-						return new wanalysis(word);
-					if(datarows[i].hash < h)
+					if(datarows[index].was[i]->getWord() == word)
 					{
-						a = i;
-					}
-					else
-					{
-						b = i;
+						return datarows[index].was[i];
 					}
 				}
-				
-				
-				for(int j = 0; datarows[i + j].hash == h; j--)
-				{
-					if(datarows[i + j].wa->getWord() == word)
-						return datarows[i + j].wa;
-				}
-				
-				for(int j = 0; datarows[i + j].hash == h; j++)
-				{
-					if(datarows[i + j].wa->getWord() == word)
-						return datarows[i + j].wa;
-				}
-				
-				return new wanalysis(word);
+				return NULL;
 			}
 			
 			watable(vector<wanalysis>wa)
 			{
+				/*
 				for(int i = 0; i < wa.size(); i++)
 				{
 					datarow dr;
@@ -251,6 +236,7 @@ namespace ds
 					datarows.push_back(dr);
 				}
 				sort();
+				*/
 			}
 			
 			int getWordCount()
@@ -262,50 +248,16 @@ namespace ds
 			
 			void insert(wanalysis* wa)
 			{	
-				// the first insertion
-				if(datarows.size() == 0)
+				int index = hash_str(wa->getWord());
+				for(int i = 0; i < datarows[index].was.size(); i++)
 				{
-					datarow dr;
-					dr.hash = hash_str(wa->getWord()); 
-					dr.wa = wa;
-					datarows.push_back(dr);
-					return;
-				}
-				unsigned long long int h = hash_str(wa->getWord());
-				int a = 0;
-				int b = datarows.size()-1;
-				int i = (a+b)/2;
-				while(datarows[i].hash != h)
-				{
-					i = (a+b)/2;
-					if((b - a) <= 1)
+					if(datarows[index].was[i]->getWord() == wa->getWord())
 					{
-						datarow dr;
-						dr.hash = hash_str(wa->getWord()); 
-						dr.wa = wa;
-						datarows.insert(datarows.begin()+a+1, dr);
+						datarows[index].was[i]->merge(wa);
 						return;
 					}
-					if(datarows[i].hash < h)
-					{
-						a = i;
-					}
-					else
-					{
-						b = i;
-					}
 				}
-				
-				if(datarows[i].wa->getWord() == wa->getWord())
-					datarows[i].wa->merge(wa);
-				else
-				{
-					datarow dr;
-					dr.hash = hash_str(wa->getWord()); 
-					dr.wa = wa;
-					datarows.insert(datarows.begin()+i+1, dr);
-					return;
-				}
+				datarows[index].was.push_back(wa);
 			}
 			
 			
@@ -325,9 +277,15 @@ namespace ds
 			/* TODO (rasekh#1#): Get the dictionary from words */
 			
 			
-			watable()
+			watable(int hashcount = 40000)
 			{
-				
+				this->hashcount = hashcount;
+				datarow row;
+				for(int i = 0; i < hashcount; i++)
+				{
+					row.hash = i;
+					datarows.push_back(row);
+				}
 			}
 			
 			string process(string word, occurrance o)

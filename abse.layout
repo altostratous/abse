@@ -20,9 +20,9 @@ LeftChar=1
 Open=0
 Top=0
 [Editor_5]
-CursorCol=1
-CursorRow=133
-TopLine=125
+CursorCol=4
+CursorRow=270
+TopLine=262
 LeftChar=1
 Open=0
 Top=0
@@ -41,9 +41,9 @@ LeftChar=1
 Open=0
 Top=0
 [Editor_2]
-CursorCol=10
-CursorRow=112
-TopLine=112
+CursorCol=1
+CursorRow=190
+TopLine=188
 LeftChar=1
 Open=0
 Top=0
@@ -62,7 +62,7 @@ LeftChar=1
 Open=0
 Top=0
 [Editors]
-Order=9,5,2
+Order=
 Focused=9
 [Editor_9]
 CursorCol=9
@@ -135,5 +135,5 @@ LeftChar=1
 [Editor_19]
 CursorCol=16
 CursorRow=18
-TopLine=12
+TopLine=2
 LeftChar=1
