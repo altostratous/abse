@@ -4,8 +4,8 @@
 CPP      = g++.exe -D__DEBUG__
 CC       = gcc.exe -D__DEBUG__
 WINDRES  = windres.exe
-OBJ      = output/phase1/main.o rasekh.o rasekh.o core/porter2_stemmer.o
-LINKOBJ  = output/phase1/main.o rasekh.o rasekh.o core/porter2_stemmer.o
+OBJ      = output/phase1/main.o rasekh.o rasekh.o core/porter2_stemmer.o output/phase2/main.o output/phase3/main.o
+LINKOBJ  = output/phase1/main.o rasekh.o rasekh.o core/porter2_stemmer.o output/phase2/main.o output/phase3/main.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -g3
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
@@ -32,3 +32,9 @@ rasekh.o: rasekh.cpp
 
 core/porter2_stemmer.o: core/porter2_stemmer.cpp
 	$(CPP) -c core/porter2_stemmer.cpp -o core/porter2_stemmer.o $(CXXFLAGS)
+
+output/phase2/main.o: output/phase2/main.cpp
+	$(CPP) -c output/phase2/main.cpp -o output/phase2/main.o $(CXXFLAGS)
+
+output/phase3/main.o: output/phase3/main.cpp
+	$(CPP) -c output/phase3/main.cpp -o output/phase3/main.o $(CXXFLAGS)

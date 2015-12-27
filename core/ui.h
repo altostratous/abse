@@ -9,6 +9,7 @@
 #include <windows.h>
 
 #include "util.h"
+#include "search.h"
 
 using namespace disk;
 using namespace index;
