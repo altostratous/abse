@@ -30,61 +30,39 @@ namespace search
 			condition* left;
 			condition* right;
 			string word;
-			
-			vector<wanalysis> or_anals(vector<wanalysis>& left, vector<wanalysis>& right)
-			{
-				vector<wanalysis> res;
-				for(int i = 0; i < left.size(); i++)
-				{
-					
-				}
-				for(int i = 0; i < left.size(); i++)
-				{
-					
-				}
-				return res;
-			}
-			
-			vector<wanalysis> and_anals(vector<wanalysis>& left, vector<wanalysis>& right)
-			{
-				
-			}
 		public:
 			condition(string cond_string)
 			{
 			}
 			
-			vector<wanalysis> filter (watable& wat)
+			wanalysis* filter (watable& wat)
 			{
-				vector<wanalysis>res;
+				wanalysis* res;
 				if(operand != CONTAINS)
 				{
-					vector<wanalysis>leftanal, rightanal;
-					leftanal = left->filter(wat);
-					rightanal = right->filter(wat);
+					wanalysis
+						*leftanal = left->filter(wat),
+						*rightanal = right->filter(wat);
 					
 					switch(operand)
 					{
 						case OR:
-							return or_anals(rightanal, leftanal);
+							leftanal->ormerge(rightanal);
+							return leftanal;
 							break;
 						case AND:
-							return and_anals(rightanal, leftanal);
+							leftanal->andmerge(rightanal);
+							return leftanal;
 							break;
 					}
 				}
 				else
 				{
-					res.push_back(*wat.find(word));
+					res = new wanalysis(word);
+					*res = *wat.find(word);
 				}
 				return res;
 			}
-	};
-	
-	class finder
-	{
-		public:
-			
 	};
 }
 

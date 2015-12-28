@@ -62,6 +62,39 @@ namespace index
 				occurrances.insert(occurrances.end(), ocs.begin(), ocs.end());
 			}
 			
+			// this merges the argument if its word is different to this wanalysis using "or" logic in file names
+			ormerge(wanalysis* wa)
+			{
+				if(wa->getWord() != this->getWord())
+				{
+					word = "(" + word + " OR " + wa->getWord() + ")";
+					vector<occurrance> ocs = wa->getOccurrances();
+					occurrances.insert(occurrances.end(), ocs.begin(), ocs.end());
+				}
+			}
+			
+			// this merges the argument if its word is different to this wanalysis using "and" logic in file names
+			andmerge(wanalysis* wa)
+			{
+				if(wa->getWord() != this->getWord())
+				{
+					word = "(" + word + " OR " + wa->getWord() + ")";
+					vector<occurrance> ocs, waocs = wa->getOccurrances();
+					for(int i = 0; i < occurrances.size(); i++)
+					{
+						for(int j = 0; j < waocs.size(); j++)
+						{
+							if(occurrances[i].file_id == waocs[j].file_id)
+							{
+								ocs.push_back(occurrances[i]);
+								ocs.push_back(waocs[j]);
+							}
+						}
+					}
+					occurrances = ocs;
+				}
+			}
+			
 			string getWord()
 			{
 				return word;
