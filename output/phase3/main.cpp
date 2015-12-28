@@ -3,6 +3,7 @@
 #include "../../core/util.h"
 
 using namespace ui;
+using namespace search;
 
 int main(int argc, char** argv) {
 	/*
@@ -21,8 +22,11 @@ int main(int argc, char** argv) {
 		cout<<"..."<<f.look(o)<<"..."<<endl;
 	}
 	*/
+	
 	cmdui cmd;
 	
 	cmd.start();
+	
+	//condition cond("((hello AND why OR this)AND(do OR go))");
 	return 0;
 }

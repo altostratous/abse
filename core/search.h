@@ -31,8 +31,125 @@ namespace search
 			condition* right;
 			string word;
 		public:
-			condition(string cond_string)
+			condition(string cond)
 			{
+				cout<<"condstr: " << cond << endl;
+				/* TODO (asgari#1#): to parse the string to formatted conditions */
+				
+				// find the search phrases
+				int par_depth = 0;
+				int depth = 0;
+				vector<occurrance> phrases;
+				occurrance par_phrase;
+				occurrance phrase;
+				for(int i = 0; i < cond.length(); i++)
+				{
+					if(cond[i] == '(')
+					{
+						if(par_depth == 0)
+						{
+							par_phrase.index = i + 1;
+						}
+						par_depth++;
+					}
+					if(cond[i] == ')')
+					{
+						par_depth--; 
+						if(par_depth == 0)
+						{
+							int end = i - 1;
+							par_phrase.length = end - par_phrase.index + 1;
+							phrases.push_back(par_phrase);
+						}
+					}
+					if(cond[i] == ' ' || cond[i] == ')' || cond[i] == '(')
+					{
+						// if it is not in the par_phrase
+						if(par_depth == 0)
+						{
+							if(depth == 0)
+							{
+								phrase.index = i + 1;
+							}
+							depth = !depth;
+							if(depth == 0)
+							{
+								int end = i - 1;
+								phrase.length = end - phrase.index + 1;
+								phrases.push_back(phrase);
+							}
+						}
+					}
+				}
+				if(phrases.size() == 0)
+				{
+					phrase.index = 0;
+					phrase.length = cond.length();
+					phrases.push_back(phrase);
+				}
+				if(phrases[0].index > 0)
+				{
+					phrase.index = 0;
+					phrase.length = phrases[0].index - 1;
+					if(phrase.length > 1)
+						phrases.insert(phrases.begin(), phrase);
+				}
+				if(phrases[phrases.size() - 1].index + phrases[phrases.size() - 1].length < cond.length())
+				{
+					phrase.index = phrases[phrases.size() - 1].index + phrases[phrases.size() - 1].length + 1;
+					phrase.length = cond.length() - phrase.index;
+					if(phrase.length > 1)
+						phrases.insert(phrases.begin(), phrase);
+				}
+				// find the first AND if exists
+				for(int i = 0; i < phrases.size(); i++)
+				{
+					string phrase_str = cond.substr(phrases[i].index, phrases[i].length);
+					if(phrase_str == "AND")
+					{
+						// continue the recursion of conditions
+						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						                     spaces and etc. */
+						
+						this->left = new condition(cond.substr(0, phrases[i].index - 1));
+						this->right = new condition(cond.substr(phrases[i].index + 4));
+						this->operand = AND;
+						return;
+					}
+				}
+				
+				// find the first OR if exists
+				for(int i = 0; i < phrases.size(); i++)
+				{
+					string phrase_str = cond.substr(phrases[i].index, phrases[i].length);
+					if(phrase_str == "OR")
+					{
+						// continue the recursion of conditions
+						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						                     spaces and etc. */
+						
+						this->left = new condition(cond.substr(0, phrases[i].index - 1));
+						this->right = new condition(cond.substr(phrases[i].index + 4));
+						this->operand = OR;
+						return;
+					}
+				}
+				
+				// if there's no operand or parantheses
+				if(cond.length() == phrases[0].length)
+				{
+					this->operand = CONTAINS;
+					this->word = cond;
+					return;
+				}
+				
+				// otherwise
+				condition* constructed = new condition(cond.substr(phrases[0].index, phrases[0].length));
+				this->operand = constructed->operand;
+				this->word = constructed->word;
+				this->left = constructed->left;
+				this->right = constructed->right;
+				delete constructed;
 			}
 			
 			wanalysis* filter (watable& wat)

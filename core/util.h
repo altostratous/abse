@@ -10,3 +10,4 @@
 #include "ui.h"
 #include "language.h"
 #include "multithread.h"
+#include "search.h"
