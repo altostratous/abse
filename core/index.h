@@ -263,27 +263,10 @@ namespace ds
 			
 			save(string path)
 			{
-				/* TODO (rasekh#1#): Save the ds in a file */
-				ds.str_pasth = pasth
 			}
 			
 			watable(string path)
 			{
-				/* TODO (rasekh#1#): load the ds from the file */
-				vector<string>ds::iterator i = v.begin ();
-
-   				while (i != v.end ())
-				{
-			    	++ i;
-  				}
-
-  				si = find (v.begin (),v.end (), path);
-
-  			 	if (i != v.end ())
-  				{
-   	   			int nPosition = distance (v.begin (), i);
-				return *i;
-				}
 			}
 			
 			/* TODO (rasekh#1#): Get the dictionary from words */
