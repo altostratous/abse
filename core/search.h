@@ -36,6 +36,8 @@ namespace search
 				// do some normalization
 				while(cond[0] == ' ')
 					cond = cond.substr(1);
+				while(cond[cond.length() - 1] == ' ')
+					cond = cond.substr(0, cond.length() - 1);
 				for(int i = 0; i < cond.length() - 1; i++)
 				{
 					if(cond[i] == ' ' && cond[i + 1] == ' ')

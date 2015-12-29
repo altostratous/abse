@@ -14,6 +14,7 @@
 using namespace disk;
 using namespace index;
 using namespace std;
+using namespace search;
 
 namespace ui
 {
@@ -119,6 +120,8 @@ namespace ui
 				cout<<blue<<"log "<<yellow<<"[filename]"<<endl;
 				cout<<blue<<"normalize "<<yellow<<"[output-dir]"<<endl;
 				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
+				cout<<blue<<"search "<<yellow<<"[search-conditions]"<<endl;
+				cout<<blue<<"view "<<yellow<<"[file-id]"<<endl;
 				cout<<blue<<"index"<<endl;
 				cout<<blue<<"save "<<endl;
 				cout<<blue<<"exit"<<endl;
@@ -143,6 +146,10 @@ namespace ui
 				/* TODO (asgari#1#): catch user faults */
 				
 				getline(cin, arguments);
+				while(arguments[0] == ' ' && arguments.length() > 0)
+				{
+					arguments = arguments.substr(1);
+				}
 				if(arguments == "")
 				{
 					// search in the index
@@ -160,7 +167,7 @@ namespace ui
 					o1.length *= 3;
 					o2.index += o2.length;
 					o2.length *= 3;
-					cout<<yellow<<"File: "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+					cout<<yellow<<"Filef"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
 					cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
 					if(conf.isset("LogFile"))
 					{
@@ -265,6 +272,44 @@ namespace ui
 				f.iterate(wat);
 				cout<<green<<"Indexed the files successfully!"<<white<<endl;
 			}
+			
+			search()
+			{
+				string cond_str;
+				getline(cin, cond_str);
+				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
+				condition cond(cond_str);
+				wanalysis wa = *cond.filter(wat);
+				cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
+				for(int i = 0; i < wa.getCount(); i++)
+				{
+					occurrance o1 = wa.getOccurrance(i);
+					occurrance o2 = o1;
+					o1.index -= 3*o1.length;
+					o1.length *= 3;
+					o2.index += o2.length;
+					o2.length *= 3;
+					cout<<yellow<<"Filef"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+					cout<<"..."<<f.look(o1)<<yellow<<f.look(wa.getOccurrance(i))<<white<<f.look(o2)<<"..."<<endl;
+				}
+			}
+			
+			view()
+			{
+				int fileid;
+				cin>>fileid;
+				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
+				ifstream fin(f.getFileNameById(fileid));
+				cout<<green;
+				while(!fin.eof())
+				{
+					string line;
+					getline(fin, line);
+					cout<<line<<endl;
+				}
+				cout<<white;
+				fin.close();
+			}
 		public:
 			cmdui()
 			{
@@ -354,7 +399,19 @@ namespace ui
 						continue;
 					}
 					
+					if(command == "search")
+					{
+						search();
+						continue;
+					}
+					
+					if(command == "view")
+					{
+						view();
+						continue;
+					}
 					cout<<red<<"No such command: "<<command<<endl<<white;
+					getline(cin, command);
 				}
 			}
 	};

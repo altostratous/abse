@@ -255,7 +255,7 @@ namespace ds
 						return datarows[index].was[i];
 					}
 				}
-				return NULL;
+				return new wanalysis(word);
 			}
 			
 			watable(vector<wanalysis>wa)
