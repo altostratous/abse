@@ -286,76 +286,6 @@ namespace ds
 				datarows[index].was.push_back(wa);
 			}
 			
-			
-			save(string path)
-			{
-				ofstream fout(path);
-				fout<<datarows.size()<<endl;
-				for(int i = 0; i < datarows.size(); i++)
-				{
-					fout<<datarows[i].was.size()<<endl;
-					for(int j = 0; j < datarows[i].was.size(); j++)
-					{
-						fout<<datarows[i].was[j]->getWord()<<endl;
-						vector<occurrance> ocs = datarows[i].was[j]->getOccurrances();
-						fout<<ocs.size()<<endl;
-						for(int k = 0; k < ocs.size(); k++)
-						{
-							fout.write((char*)(&ocs[k]), sizeof(occurrance));
-						}
-					}
-				}
-				fout.close();
-			}
-			
-			watable(string path)
-			{
-				ifstream fin(path);
-				string line;
-				getline(fin, line);
-				stringstream* ss = new stringstream(line);
-				int dr_size;
-				(*ss)>>dr_size;
-				this->hashcount = dr_size;
-				datarow row;
-				for(int i = 0; i < hashcount; i++)
-				{
-					row.hash = i;
-					datarows.push_back(row);
-				}
-				for(int i = 0; i < dr_size; i++)
-				{
-					getline(fin, line);
-					ss = new stringstream(line);
-					int was_size;
-					(*ss) >> was_size;
-					vector<wanalysis*> was;
-					for(int j = 0; j < was_size; j++)
-					{
-						getline(fin, line);
-						wanalysis* wa = new wanalysis(line);
-						getline(fin, line);
-						ss = new stringstream(line);
-						int ocs_size;
-						(*ss) >> ocs_size;
-						for(int k = 0; k < ocs_size; k++)
-						{
-							occurrance o;
-							fin.read((char*)(&o), sizeof(occurrance));
-							wa->merge(o);
-						}
-						was.push_back(wa);
-					}
-					datarow dr;
-					dr.hash = i;
-					dr.was = was;
-					datarows[i] = dr;
-					if(i % 500 == 0)
-					cout<<i<<endl;
-				}
-				fin.close();
-			}
-			
 			/* TODO (rasekh#1#): Get the dictionary from words */
 			
 			
@@ -376,6 +306,19 @@ namespace ds
 				wa->process(word, o);
 				insert(wa);
 				return word;
+			}
+			
+			int getOccurranceCount()
+			{
+				int counter = 0;
+				for(int i = 0; i < datarows.size(); i++)
+				{
+					for(int j = 0; j < datarows[i].was.size(); j++)
+					{
+						counter += datarows[i].was[j]->getCount();
+					}
+				}
+				return counter;
 			}
 	};
 }

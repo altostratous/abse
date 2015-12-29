@@ -152,7 +152,7 @@ namespace search
 				if(cond.length() == phrases[0].length)
 				{
 					this->operand = CONTAINS;
-					this->word = cond;
+					this->word = porter::stem(cond);
 					return;
 				}
 				
