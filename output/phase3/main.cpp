@@ -27,6 +27,5 @@ int main(int argc, char** argv) {
 	
 	cmd.start();
 	
-	//condition cond("((hello AND why OR this)AND(do OR go))");
 	return 0;
 }

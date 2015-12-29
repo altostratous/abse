@@ -33,7 +33,16 @@ namespace search
 		public:
 			condition(string cond)
 			{
-				cout<<"condstr: " << cond << endl;
+				// do some normalization
+				while(cond[0] == ' ')
+					cond = cond.substr(1);
+				for(int i = 0; i < cond.length() - 1; i++)
+				{
+					if(cond[i] == ' ' && cond[i + 1] == ' ')
+					{
+						cond = cond.substr(0, i) + cond.substr(i + 1);
+					}
+				}
 				/* TODO (asgari#1#): to parse the string to formatted conditions */
 				
 				// find the search phrases
@@ -42,8 +51,32 @@ namespace search
 				vector<occurrance> phrases;
 				occurrance par_phrase;
 				occurrance phrase;
+				phrase.index = 0;
 				for(int i = 0; i < cond.length(); i++)
 				{
+					if(cond[i] == ' ' || cond[i] == '(' || cond[i] == ')' || i == 0 || i == cond.length() - 1)
+					{
+						if(i == cond.length() - 1 && (cond[i] != '(' && cond[i] != ')'))
+						{
+							phrase.length = cond.length() - phrase.index;
+						}
+						else
+						{
+							phrase.length = i - phrase.index; 
+						}
+						if(phrase.length > 1 || (cond[phrase.index] != '(' && cond[phrase.index] != ')'))
+						{
+							phrases.push_back(phrase);
+						}
+						if(i == 0 && (cond[i] != '(' && cond[i] != ')'))
+						{
+							phrase.index = 0;
+						}
+						else
+						{
+							phrase.index = i + 1;
+						}
+					}
 					if(cond[i] == '(')
 					{
 						if(par_depth == 0)
@@ -62,45 +95,23 @@ namespace search
 							phrases.push_back(par_phrase);
 						}
 					}
-					if(cond[i] == ' ' || cond[i] == ')' || cond[i] == '(')
+				}
+				for(int i = 0; i < phrases.size(); i++)
+				{
+					for(int j = 0; j < phrases.size(); j++)
 					{
-						// if it is not in the par_phrase
-						if(par_depth == 0)
+						if(phrases[j].index >= phrases[i].index && phrases[j].index + phrases[j].length <= phrases[i].index + phrases[i].length && i != j)
 						{
-							if(depth == 0)
-							{
-								phrase.index = i + 1;
-							}
-							depth = !depth;
-							if(depth == 0)
-							{
-								int end = i - 1;
-								phrase.length = end - phrase.index + 1;
-								phrases.push_back(phrase);
-							}
+							phrases[j].length = 0;
 						}
 					}
 				}
-				if(phrases.size() == 0)
+				for(int i = phrases.size() - 1; i >= 0; i--)
 				{
-					phrase.index = 0;
-					phrase.length = cond.length();
-					phrases.push_back(phrase);
+					if(phrases[i].length == 0)
+						phrases.erase(phrases.begin() + i);
 				}
-				if(phrases[0].index > 0)
-				{
-					phrase.index = 0;
-					phrase.length = phrases[0].index - 1;
-					if(phrase.length > 1)
-						phrases.insert(phrases.begin(), phrase);
-				}
-				if(phrases[phrases.size() - 1].index + phrases[phrases.size() - 1].length < cond.length())
-				{
-					phrase.index = phrases[phrases.size() - 1].index + phrases[phrases.size() - 1].length + 1;
-					phrase.length = cond.length() - phrase.index;
-					if(phrase.length > 1)
-						phrases.insert(phrases.begin(), phrase);
-				}
+				
 				// find the first AND if exists
 				for(int i = 0; i < phrases.size(); i++)
 				{
@@ -111,8 +122,8 @@ namespace search
 						/* TODO (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
-						this->left = new condition(cond.substr(0, phrases[i].index - 1));
-						this->right = new condition(cond.substr(phrases[i].index + 4));
+						this->left = new condition(cond.substr(0, phrases[i].index));
+						this->right = new condition(cond.substr(phrases[i].index + 3));
 						this->operand = AND;
 						return;
 					}
@@ -128,8 +139,8 @@ namespace search
 						/* TODO (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
-						this->left = new condition(cond.substr(0, phrases[i].index - 1));
-						this->right = new condition(cond.substr(phrases[i].index + 4));
+						this->left = new condition(cond.substr(0, phrases[i].index));
+						this->right = new condition(cond.substr(phrases[i].index + 2));
 						this->operand = OR;
 						return;
 					}
