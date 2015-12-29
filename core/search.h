@@ -20,7 +20,9 @@ namespace search
 	{
 		CONTAINS,
 		AND,
-		OR
+		OR,
+		NOT,
+		ALL
 	};
 	
 	class condition
@@ -31,11 +33,16 @@ namespace search
 			condition* right;
 			string word;
 		public:
-			condition(string cond)
+			condition(string cond, bool steminput = false)
 			{
 				// do some normalization
-				while(cond[0] == ' ')
+				while(cond[0] == ' ' && cond.length() > 0)
 					cond = cond.substr(1);
+				if(cond.length() == 0)
+				{
+					this->operand = ALL;
+					return;
+				}
 				while(cond[cond.length() - 1] == ' ')
 					cond = cond.substr(0, cond.length() - 1);
 				for(int i = 0; i < cond.length() - 1; i++)
@@ -114,6 +121,23 @@ namespace search
 						phrases.erase(phrases.begin() + i);
 				}
 				
+				// find the first NOT if exists
+				for(int i = 0; i < phrases.size(); i++)
+				{
+					string phrase_str = cond.substr(phrases[i].index, phrases[i].length);
+					if(phrase_str == "NOT")
+					{
+						// continue the recursion of conditions
+						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						                     spaces and etc. */
+						
+						this->left = new condition(cond.substr(0, phrases[i].index));
+						this->right = new condition(cond.substr(phrases[i].index + 3));
+						this->operand = NOT;
+						return;
+					}
+				}
+				
 				// find the first AND if exists
 				for(int i = 0; i < phrases.size(); i++)
 				{
@@ -152,7 +176,10 @@ namespace search
 				if(cond.length() == phrases[0].length)
 				{
 					this->operand = CONTAINS;
-					this->word = porter::stem(cond);
+					if(steminput)
+						this->word = porter::stem(cond);
+					else
+						this->word = cond;
 					return;
 				}
 				
@@ -167,6 +194,8 @@ namespace search
 			
 			wanalysis* filter (watable& wat)
 			{
+				if(operand == ALL)
+					return wat.getAll();
 				wanalysis* res;
 				if(operand != CONTAINS)
 				{
@@ -182,6 +211,10 @@ namespace search
 							break;
 						case AND:
 							leftanal->andmerge(rightanal);
+							return leftanal;
+							break;
+						case NOT:
+							leftanal->notmerge(rightanal);
 							return leftanal;
 							break;
 					}

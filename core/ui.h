@@ -120,6 +120,7 @@ namespace ui
 				cout<<blue<<"log "<<yellow<<"[filename]"<<endl;
 				cout<<blue<<"normalize "<<yellow<<"[output-dir]"<<endl;
 				cout<<blue<<"config "<<yellow<<"[key] [value]"<<endl;
+				cout<<blue<<"config "<<yellow<<"[/s]"<<endl;
 				cout<<blue<<"search "<<yellow<<"[search-conditions]"<<endl;
 				cout<<blue<<"view "<<yellow<<"[file-id]"<<endl;
 				cout<<blue<<"index"<<endl;
@@ -156,9 +157,10 @@ namespace ui
 					wa = *(wat.find(word));
 				}
 				else
-					if(arguments == " /f")
+					if(arguments == "/f")
 						f.iterate(wa);
-				cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
+				if(conf.getInteger("ShowCount"))
+					cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
 				for(int i = 0; i < wa.getCount(); i++)
 				{
 					occurrance o1 = wa.getOccurrance(i);
@@ -167,8 +169,10 @@ namespace ui
 					o1.length *= 3;
 					o2.index += o2.length;
 					o2.length *= 3;
-					cout<<yellow<<"Filef"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
-					cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
+					if(conf.getInteger("ReportFile"))
+						cout<<yellow<<"File"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+					if(conf.getInteger("ShowSummary"))
+						cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
 					if(conf.isset("LogFile"))
 					{
 						fout<<"File: "<<f.getFileNameById(o1.file_id)<<"\n"<<"Paragraph"<<"#"<<o1.paragraph_id<<endl;
@@ -230,9 +234,18 @@ namespace ui
 				string key;
 				string value;
 				cin>>key;
-				cin>>value;
-				conf.add(key, value);
-				cout<<green<<"Configuration set successfully."<<white<<endl;
+				if(key != "/s")
+				{
+					cin>>value;
+					conf.add(key, value);
+					cout<<green<<"Configuration set successfully."<<white<<endl;
+				}
+				else
+				{
+					cout<<blue<<"Configurations are set as below:"<<green<<endl;
+					cout<<conf.view();
+					cout<<white;
+				}
 			}
 			
 			save()
@@ -278,9 +291,10 @@ namespace ui
 				string cond_str;
 				getline(cin, cond_str);
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
-				condition cond(cond_str);
+				condition cond(cond_str, conf.getInteger("StemInput"));
 				wanalysis wa = *cond.filter(wat);
-				cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
+				if(conf.getInteger("ShowCount"))
+					cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
 				for(int i = 0; i < wa.getCount(); i++)
 				{
 					occurrance o1 = wa.getOccurrance(i);
@@ -289,8 +303,10 @@ namespace ui
 					o1.length *= 3;
 					o2.index += o2.length;
 					o2.length *= 3;
-					cout<<yellow<<"Filef"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
-					cout<<"..."<<f.look(o1)<<yellow<<f.look(wa.getOccurrance(i))<<white<<f.look(o2)<<"..."<<endl;
+					if(conf.getInteger("ReportFile"))
+						cout<<yellow<<"Filef"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+					if(conf.getInteger("ShowSummary"))
+						cout<<"..."<<f.look(o1)<<yellow<<f.look(wa.getOccurrance(i))<<white<<f.look(o2)<<"..."<<endl;
 				}
 			}
 			

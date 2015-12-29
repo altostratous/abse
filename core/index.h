@@ -102,6 +102,26 @@ namespace index
 				}
 			}
 			
+			notmerge(wanalysis* wa)
+			{
+				vector<occurrance> ocs, waocs = wa->getOccurrances();
+				for(int i = 0; i < occurrances.size(); i++)
+				{
+					bool test = false;
+					for(int j = 0; j < waocs.size(); j++)
+					{
+						if(waocs[j].file_id == occurrances[i].file_id)
+						{
+							test = true;
+							break;
+						}
+					}
+					if(!test)
+						ocs.push_back(occurrances[i]);
+				}
+				occurrances = ocs;
+			}
+			
 			string getWord()
 			{
 				return word;
@@ -263,6 +283,21 @@ namespace ds
 					}
 				}
 				return new wanalysis(word);
+			}
+			
+			wanalysis* getAll() 
+			{
+				wanalysis* wa = new wanalysis("");
+				for(int i = 0; i < datarows.size(); i++)
+				
+				{
+					for(int j = 0; j < datarows[i].was.size(); j++)
+					{
+						wa->merge(datarows[i].was[j]);
+					}
+				}
+				
+				return wa;
 			}
 			
 			int getWordCount()

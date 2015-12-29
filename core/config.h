@@ -107,11 +107,21 @@ namespace disk
 			
 			int getInteger(string key)
 			{
-				return 10;
 				char* str = (char*) malloc(getString(key).length());
 				strcpy(str, getString(key).c_str());
 				int res =  atoi(str);
 				free (str);
+				return res;
+			}
+			
+			string view()
+			{
+				map<string, string>::iterator i;
+				string res = "";
+				for(i = properties.begin(); i != properties.end(); i++)
+				{
+					res = res + "\t" + (*i).first + ":\t\t" + (*i).second + "\n";
+				}
 				return res;
 			}
 	};
