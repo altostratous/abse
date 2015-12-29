@@ -238,6 +238,7 @@ namespace ui
 			save()
 			{
 				conf.save();
+				wat.save("index");
 				cout<<green<<"Configurations saved successfully."<<white<<endl;
 			}
 			
@@ -316,6 +317,7 @@ namespace ui
 				pleaseexit = false;
 				about();
 				help();
+				wat = *(new watable("index"));
 			}
 			
 			
