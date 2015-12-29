@@ -12,6 +12,10 @@ using namespace std;
 
 namespace ds
 {
+	// Rasekh: here I added a vector for the function line 264 of index
+	vector<string> str_path; // vector for saving string path
+	
+	
 	/*
 		This is the data structure to store occurrances of grams
 		Things to store
