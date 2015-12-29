@@ -277,7 +277,7 @@ namespace ds
 			    	++ i;
   				}
 
-  				ssi = find (v.begin (),v.end (), path);
+  				si = find (v.begin (),v.end (), path);
 
   			 	if (i != v.end ())
   				{
