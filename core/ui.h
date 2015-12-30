@@ -161,24 +161,25 @@ namespace ui
 						f.iterate(wa);
 				if(conf.getInteger("ShowCount"))
 					cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
-				for(int i = 0; i < wa.getCount(); i++)
-				{
-					occurrance o1 = wa.getOccurrance(i);
-					occurrance o2 = o1;
-					o1.index -= 3*o1.length;
-					o1.length *= 3;
-					o2.index += o2.length;
-					o2.length *= 3;
-					if(conf.getInteger("ReportFile"))
-						cout<<yellow<<"File"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
-					if(conf.getInteger("ShowSummary"))
-						cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
-					if(conf.isset("LogFile"))
+				if(conf.getInteger("ReportFile") || conf.getInteger("ShowSummary"))
+					for(int i = 0; i < wa.getCount(); i++)
 					{
-						fout<<"File: "<<f.getFileNameById(o1.file_id)<<"\n"<<"Paragraph"<<"#"<<o1.paragraph_id<<endl;
-						fout<<"..."<<f.look(o1)<<word<<f.look(o2)<<"..."<<endl;
+						occurrance o1 = wa.getOccurrance(i);
+						occurrance o2 = o1;
+						o1.index -= 3*o1.length;
+						o1.length *= 3;
+						o2.index += o2.length;
+						o2.length *= 3;
+						if(conf.getInteger("ReportFile"))
+							cout<<yellow<<"File"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+						if(conf.getInteger("ShowSummary"))
+							cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
+						if(conf.isset("LogFile"))
+						{
+							fout<<"File: "<<f.getFileNameById(o1.file_id)<<"\n"<<"Paragraph"<<"#"<<o1.paragraph_id<<endl;
+							fout<<"..."<<f.look(o1)<<f.look(wa.getOccurrance(i))<<f.look(o2)<<"..."<<endl;
+						}
 					}
-				}
 				if(conf.isset("LogFile"))
 					fout.close();
 			}
@@ -295,19 +296,20 @@ namespace ui
 				wanalysis wa = *cond.filter(wat);
 				if(conf.getInteger("ShowCount"))
 					cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
-				for(int i = 0; i < wa.getCount(); i++)
-				{
-					occurrance o1 = wa.getOccurrance(i);
-					occurrance o2 = o1;
-					o1.index -= 3*o1.length;
-					o1.length *= 3;
-					o2.index += o2.length;
-					o2.length *= 3;
-					if(conf.getInteger("ReportFile"))
-						cout<<yellow<<"Filef"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
-					if(conf.getInteger("ShowSummary"))
-						cout<<"..."<<f.look(o1)<<yellow<<f.look(wa.getOccurrance(i))<<white<<f.look(o2)<<"..."<<endl;
-				}
+				if(conf.getInteger("ReportFile") || conf.getInteger("ShowSummary"))
+					for(int i = 0; i < wa.getCount(); i++)
+					{
+						occurrance o1 = wa.getOccurrance(i);
+						occurrance o2 = o1;
+						o1.index -= 3*o1.length;
+						o1.length *= 3;
+						o2.index += o2.length;
+						o2.length *= 3;
+						if(conf.getInteger("ReportFile"))
+							cout<<yellow<<"File"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+						if(conf.getInteger("ShowSummary"))
+							cout<<"..."<<f.look(o1)<<yellow<<f.look(wa.getOccurrance(i))<<white<<f.look(o2)<<"..."<<endl;
+					}
 			}
 			
 			view()
