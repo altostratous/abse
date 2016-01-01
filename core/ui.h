@@ -7,6 +7,7 @@
 #include<iostream>
 #include<vector>
 #include <windows.h>
+#include <map>
 
 #include "util.h"
 #include "search.h"
@@ -131,12 +132,63 @@ namespace ui
 				
 			}
 			
-			find()
+			report(wanalysis& wa, file& f)
 			{
 				ofstream fout;
 				if(conf.isset("LogFile"))
 					fout.open(conf.getString("LogFile").c_str());
-				
+				if(conf.getInteger("OccurranceView"))
+				{	
+					cout<<blue<<"--------------------------------- Occurrances ---------------------------------"<<white<<endl;
+					if(conf.getInteger("ShowCount"))
+						cout<<"Found "<<yellow<<wa.getCount()<<white<<" items.\n";
+					if(conf.getInteger("ReportFile") || conf.getInteger("ShowSummary"))
+						for(int i = 0; i < wa.getCount(); i++)
+						{
+							occurrance o1 = wa.getOccurrance(i);
+							occurrance o2 = o1;
+							o1.index -= 3*o1.length;
+							o1.length *= 3;
+							o2.index += o2.length;
+							o2.length *= 3;
+							if(conf.getInteger("ReportFile"))
+								cout<<yellow<<"File"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
+							if(conf.getInteger("ShowSummary"))
+								cout<<"..."<<f.look(o1)<<yellow<<f.look(wa.getOccurrance(i))<<white<<f.look(o2)<<"..."<<endl;
+							if(conf.isset("LogFile"))
+							{
+								fout<<"File: "<<f.getFileNameById(o1.file_id)<<"\n"<<"Paragraph"<<"#"<<o1.paragraph_id<<endl;
+								fout<<"..."<<f.look(o1)<<f.look(wa.getOccurrance(i))<<f.look(o2)<<"..."<<endl;
+							}
+						}
+				}
+				if(conf.getInteger("FileView"))
+				{
+					cout<<blue<<"------------------------------------ Files ------------------------------------"<<white<<endl;
+					map<int, int> files;
+					for(int i = 0; i < wa.getCount(); i++)
+					{
+						occurrance o = wa.getOccurrance(i);
+						if(files.count(o.file_id))
+						{
+							files[o.file_id]++;
+						}
+						else
+						{
+							files.insert(make_pair(o.file_id, 1));
+						}
+					}
+					for(map<int, int>::iterator i = files.begin(); i != files.end(); i++)
+					{
+						cout<<yellow<<"File"<<blue<<"#"<<yellow<<(*i).first<<blue<<" "<<white<<f.getFileNameById((*i).first)<<" Found "<<yellow<<(*i).second<<white<<" items."<<endl;
+					}
+				}
+				if(conf.isset("LogFile"))
+					fout.close();
+			}
+			
+			find()
+			{
 				string word;
 				cin>>word;
 				
@@ -159,29 +211,7 @@ namespace ui
 				else
 					if(arguments == "/f")
 						f.iterate(wa);
-				if(conf.getInteger("ShowCount"))
-					cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
-				if(conf.getInteger("ReportFile") || conf.getInteger("ShowSummary"))
-					for(int i = 0; i < wa.getCount(); i++)
-					{
-						occurrance o1 = wa.getOccurrance(i);
-						occurrance o2 = o1;
-						o1.index -= 3*o1.length;
-						o1.length *= 3;
-						o2.index += o2.length;
-						o2.length *= 3;
-						if(conf.getInteger("ReportFile"))
-							cout<<yellow<<"File"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
-						if(conf.getInteger("ShowSummary"))
-							cout<<"..."<<f.look(o1)<<yellow<<word<<white<<f.look(o2)<<"..."<<endl;
-						if(conf.isset("LogFile"))
-						{
-							fout<<"File: "<<f.getFileNameById(o1.file_id)<<"\n"<<"Paragraph"<<"#"<<o1.paragraph_id<<endl;
-							fout<<"..."<<f.look(o1)<<f.look(wa.getOccurrance(i))<<f.look(o2)<<"..."<<endl;
-						}
-					}
-				if(conf.isset("LogFile"))
-					fout.close();
+				report(wa, f);
 			}
 			
 			replace()
@@ -294,22 +324,7 @@ namespace ui
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
 				condition cond(cond_str, conf.getInteger("StemInput"));
 				wanalysis wa = *cond.filter(wat);
-				if(conf.getInteger("ShowCount"))
-					cout<<"Found "<<yellow<<wa.getCount()<<white<<" times.\n";
-				if(conf.getInteger("ReportFile") || conf.getInteger("ShowSummary"))
-					for(int i = 0; i < wa.getCount(); i++)
-					{
-						occurrance o1 = wa.getOccurrance(i);
-						occurrance o2 = o1;
-						o1.index -= 3*o1.length;
-						o1.length *= 3;
-						o2.index += o2.length;
-						o2.length *= 3;
-						if(conf.getInteger("ReportFile"))
-							cout<<yellow<<"File"<<blue<<"#"<<yellow<<o1.file_id<<blue<<": "<<white<<f.getFileNameById(o1.file_id)<<"\n"<<yellow<<"Paragraph"<<blue<<"#"<<yellow<<o1.paragraph_id<<white<<endl;
-						if(conf.getInteger("ShowSummary"))
-							cout<<"..."<<f.look(o1)<<yellow<<f.look(wa.getOccurrance(i))<<white<<f.look(o2)<<"..."<<endl;
-					}
+				report(wa, f);
 			}
 			
 			view()
