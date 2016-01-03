@@ -234,6 +234,10 @@ namespace search
 					{
 						if(*leftanal == NULL || *rightanal == NULL)
 								return;
+						if(*leftanal.suprimum > c.suprimum) // new added
+							swap(*c , *leftanal);
+						if(*leftanal.suprimum > c.suprimum) // new added
+							swap(*c , *leftanal);
 						if(*leftanal.suprimum > *rightanl.suprimum) // 	first version:	swap(*leftanal.suprimum , *rightanl.suprimum);
 							swap(*leftanal , *rightanal);
 						andsort(conditon * c.leftanal);
@@ -246,6 +250,10 @@ namespace search
 					{
 						if(*leftanal == NULL || *rightanal == NULL)
 							return;
+						if(*leftanal.suprimum > c.suprimum) // new added
+							swap(*c , *leftanal);
+						if(*leftanal.suprimum > c.suprimum) // new added
+							swap(*c , *leftanal);
 						if(*leftanal.suprimum > *rightanl.suprimum)
 							swap(*leftanal, *rightanl); // 	first version:	swap(*leftanal.suprimum , *rightanl.suprimum);
 						orsort(conditon * c.leftanal);
