@@ -224,7 +224,35 @@ namespace search
 					res = new wanalysis(word);
 					*res = *wat.find(word);
 				}
+
+				// start of lower part adde by rasekh
+				
+				
+				void andsort(condition * c)
+				if(operand == AND)
+				{
+					if(*leftanal == NULL || *rightanal == NULL)
+							return;
+					if(*leftanal.suprimum > *rightanl.suprimum)
+						swap(*leftanal.suprimum , *rightanl.suprimum);
+					andsort(conditon * c.leftanal);
+				}
+				
+				void orsort(condition * c)
+				if(operand == OR)
+				{
+					if(*leftanal == NULL || *rightanal == NULL)
+						return;
+					if(*leftanal.infimum > *rightanl.infimuum)
+						swap(*leftanal.infimum , *rightanl.infimum);
+					orsort(conditon * c.leftanal);
+				}
+
+				// 	end of this part
+				// note : not function isn't added
+				
 				return res;
+				
 			}
 	};
 }
