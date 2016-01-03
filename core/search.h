@@ -229,25 +229,28 @@ namespace search
 				
 				
 				void andsort(condition * c)
-				if(operand == AND)
 				{
-					if(*leftanal == NULL || *rightanal == NULL)
-							return;
-					if(*leftanal.suprimum > *rightanl.suprimum)
-						swap(*leftanal.suprimum , *rightanl.suprimum);
-					andsort(conditon * c.leftanal);
+					if(operand == AND)
+					{
+						if(*leftanal == NULL || *rightanal == NULL)
+								return;
+						if(*leftanal.suprimum > *rightanl.suprimum) // 	first version:	swap(*leftanal.suprimum , *rightanl.suprimum);
+							swap(*leftanal , *rightanal);
+						andsort(conditon * c.leftanal);
+					}
 				}
-				
+			
 				void orsort(condition * c)
-				if(operand == OR)
 				{
-					if(*leftanal == NULL || *rightanal == NULL)
-						return;
-					if(*leftanal.infimum > *rightanl.infimuum)
-						swap(*leftanal.infimum , *rightanl.infimum);
-					orsort(conditon * c.leftanal);
+					if(operand == OR)
+					{
+						if(*leftanal == NULL || *rightanal == NULL)
+							return;
+						if(*leftanal.suprimum > *rightanl.suprimum)
+							swap(*leftanal, *rightanl); // 	first version:	swap(*leftanal.suprimum , *rightanl.suprimum);
+						orsort(conditon * c.leftanal);
+					}
 				}
-
 				// 	end of this part
 				// note : not function isn't added
 				
