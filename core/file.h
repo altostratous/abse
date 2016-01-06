@@ -1,6 +1,6 @@
 /*
 	Purpose: to access files efficiently and perform processes
-	Multithreadings should be done here
+	Multithreadings should be done here 
 	Here we will imlement functions to iterate files and perform any process
 */
 
@@ -222,6 +222,7 @@ namespace disk
 	};
 	
 }
+/* TODO (asagri#1#): manage paragraph counting */
 
 #include "multithread.h"
 
