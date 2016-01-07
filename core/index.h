@@ -82,8 +82,32 @@ namespace index
 				if(wa->getWord() != this->getWord())
 				{
 					word = "(" + word + " OR " + wa->getWord() + ")";
-					vector<occurrance> ocs = wa->getOccurrances();
-					occurrances.insert(occurrances.end(), ocs.begin(), ocs.end());
+					vector<occurrance> ocs, waocs = wa->getOccurrances();
+					vector<occurrance>::iterator i = occurrances.begin(), j = waocs.begin();
+					while(i != occurrances.end() && j != waocs.end())
+					{
+						if((*i).file_id < (*j).file_id)
+						{
+							ocs.push_back(*i);
+							i++;
+						}
+						else
+						{
+							ocs.push_back(*j);
+							j++;
+						}
+					}
+					while(i != occurrances.end())
+					{
+						ocs.push_back(*i);
+						i++;
+					}
+					while(j != waocs.end())
+					{
+						ocs.push_back(*j);
+						j++;
+					}
+					occurrances = ocs;
 				}
 			}
 			
@@ -92,18 +116,23 @@ namespace index
 			{
 				if(wa->getWord() != this->getWord())
 				{
-					word = "(" + word + " OR " + wa->getWord() + ")";
+					word = "(" + word + " AND " + wa->getWord() + ")";
 					vector<occurrance> ocs, waocs = wa->getOccurrances();
-					for(int i = 0; i < occurrances.size(); i++)
+					vector<occurrance>::iterator i = occurrances.begin(), j = waocs.begin();
+					while(i != occurrances.end() && j != waocs.end())
 					{
-						for(int j = 0; j < waocs.size(); j++)
+						if((*i).file_id < (*j).file_id)
 						{
-							if(occurrances[i].file_id == waocs[j].file_id)
-							{
-								ocs.push_back(occurrances[i]);
-								ocs.push_back(waocs[j]);
-							}
+							i++;
+							continue;
 						}
+						if((*i).file_id == (*j).file_id)
+						{
+							ocs.push_back(*i);
+							i++;
+							continue;
+						}
+						j++;
 					}
 					occurrances = ocs;
 				}
