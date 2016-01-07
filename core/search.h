@@ -224,8 +224,10 @@ namespace search
 					res = new wanalysis(word);
 					*res = *wat.find(word);
 				}
-
-				
+				return res;
+			}
+			
+			/*
 				// here 2 funtions are added to return the suprimum of a condition
 				// in fact two functions are written.one of them can be true				
 				int suprimum()
@@ -280,10 +282,7 @@ namespace search
 				}
 				// 	end of this part
 				// note : not function isn't added
-				
-				return res;
-				
-			}
+			*/	
 	};
 }
 

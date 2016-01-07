@@ -69,6 +69,11 @@ namespace index
 				occurrances.push_back(o);
 			}
 			
+			merge(vector<occurrance>& occurrs)
+			{
+				occurrances.insert(occurrances.end(), occurrs.begin(), occurrs.end());
+			}
+			
 			// this merges the argument if its word is different to this wanalysis using "or" logic in file names
 			ormerge(wanalysis* wa)
 			{
@@ -257,6 +262,7 @@ namespace ds
 			hash<string>inner_hash;
 			int hashcount;
 			vector<datarow> datarows;
+			wanalysis* all;
 			/*
 			sort()
 			{
@@ -287,17 +293,7 @@ namespace ds
 			
 			wanalysis* getAll() 
 			{
-				wanalysis* wa = new wanalysis("");
-				for(int i = 0; i < datarows.size(); i++)
-				
-				{
-					for(int j = 0; j < datarows[i].was.size(); j++)
-					{
-						wa->merge(datarows[i].was[j]);
-					}
-				}
-				
-				return wa;
+				return all;
 			}
 			
 			int getWordCount()
@@ -309,6 +305,7 @@ namespace ds
 			
 			void insert(wanalysis* wa)
 			{	
+				all->merge(wa);
 				int index = hash_str(wa->getWord());
 				for(int i = 0; i < datarows[index].was.size(); i++)
 				{
@@ -326,6 +323,7 @@ namespace ds
 			
 			watable(int hashcount = 40000)
 			{
+				all  = new wanalysis("");
 				this->hashcount = hashcount;
 				datarow row;
 				for(int i = 0; i < hashcount; i++)
