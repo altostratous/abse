@@ -29,6 +29,8 @@ namespace index
 	
 	class wanalysis : public analysis
 	{
+		/* TODO (asgari#1#): may be later add multiple words functionallity */
+		
 		private:
 			vector<occurrance> occurrances;
 			string word;
@@ -110,19 +112,27 @@ namespace index
 			notmerge(wanalysis* wa)
 			{
 				vector<occurrance> ocs, waocs = wa->getOccurrances();
-				for(int i = 0; i < occurrances.size(); i++)
+				vector<occurrance>::iterator i = occurrances.begin(), j = waocs.begin();
+				while(i != occurrances.end())
 				{
-					bool test = false;
-					for(int j = 0; j < waocs.size(); j++)
+					if(j == waocs.end())
 					{
-						if(waocs[j].file_id == occurrances[i].file_id)
-						{
-							test = true;
-							break;
-						}
+						ocs.push_back(*i);
+						i++;
+						continue;
 					}
-					if(!test)
-						ocs.push_back(occurrances[i]);
+					if((*i).file_id < (*j).file_id)
+					{
+						ocs.push_back(*i);
+						i++;
+						continue;
+					}
+					if((*i).file_id == (*j).file_id)
+					{
+						i++;
+						continue;
+					}
+					j++;
 				}
 				occurrances = ocs;
 			}
@@ -293,7 +303,9 @@ namespace ds
 			
 			wanalysis* getAll() 
 			{
-				return all;
+				wanalysis* res = new wanalysis("");
+				*res = *all;
+				return res;
 			}
 			
 			int getWordCount()
