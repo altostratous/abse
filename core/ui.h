@@ -323,8 +323,11 @@ namespace ui
 				getline(cin, cond_str);
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
 				condition cond(cond_str, conf.getInteger("StemInput"));
-				wanalysis wa = *cond.filter(wat);
-				report(wa, f);
+				cout<<"Understood: " + cond.toString() <<endl;
+				cond.optimize(wat);
+				cout<<"Optimized: " + cond.toString() <<endl;
+				//wanalysis wa = *cond.filter(wat);
+				//report(wa, f);
 			}
 			
 			view()

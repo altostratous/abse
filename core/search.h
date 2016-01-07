@@ -25,6 +25,12 @@ namespace search
 		ALL
 	};
 	
+	enum condition_sort_logic
+	{
+		INFIMUM_BASED,
+		SUPRIMUM_BASED
+	};
+	
 	class condition
 	{
 		private:
@@ -32,7 +38,113 @@ namespace search
 			condition* left;
 			condition* right;
 			string word;
+			sort(vector<condition**> list, condition_sort_logic logic, watable& wat)
+			{
+				for(int i = 0; i < list.size(); i++)
+				{
+					for(int j = i + 1; j < list.size(); j++)
+					{
+						if(comp(*(list[i]), *(list[j]), logic, wat) > 0)
+						{
+							condition* temp = *(list[i]);
+							*(list[i]) = *(list[j]);
+							*(list[j]) = temp;
+						}
+					}
+				}
+			}
+			int comp(condition* c1, condition* c2, condition_sort_logic logic, watable& wat)
+			{
+				if(logic == INFIMUM_BASED)
+				{
+					return c2->infimum(wat) - c1->infimum(wat);
+				}
+				
+				if(logic == SUPRIMUM_BASED)
+				{
+					return c1->suprimum(wat) - c2->suprimum(wat);
+				}
+			}
 		public:
+			vector<condition**> getIsoLevels()
+			{
+				vector<condition**> res;
+				if(operand == ALL || operand == CONTAINS)
+				{
+					return res;
+				}
+				if(
+					right->operand == operand || 
+					(operand == AND && right->operand == NOT) || 
+					(operand == NOT && right->operand == AND) || 
+					right->operand == ALL
+				)
+				{
+					vector<condition**> rightside = right->getIsoLevels();
+					res.insert(res.end(), rightside.begin(), rightside.end());
+				}
+				if(right->operand == CONTAINS || right->operand == ALL || right->operand == NOT)
+				{
+					if(operand != NOT)
+						res.push_back(&right);
+				}
+				if(
+					left->operand == operand || 
+					(operand == AND && left->operand == NOT) || 
+					(operand == NOT && left->operand != OR) ||
+					left->operand == ALL
+				)
+				{
+					vector<condition**> leftside = left->getIsoLevels();
+					res.insert(res.end(), leftside.begin(), leftside.end());
+				}
+				if(left->operand == CONTAINS || left->operand == ALL || left->operand == NOT)
+				{
+					res.push_back(&left);
+				}
+				return res;
+			}
+			// iptimizes the query
+			void optimize(watable& wat)
+			{
+				// find pointers to the conditions having same level to this condition
+				// it means:
+				//		1- NOT, AND, ALL
+				// 		2- OR, ALL
+				
+				// the isolevel conditions
+				if(operand == CONTAINS || operand == ALL)
+					return;
+				vector<condition**> isolevels = getIsoLevels();
+				left->optimize(wat);
+				right->optimize(wat);
+				if(operand == OR)
+				{
+					sort(isolevels, INFIMUM_BASED, wat);
+					if(left->operand == ALL)
+					{
+						operand = ALL;
+					}
+					return;
+				}
+				if(operand == AND)
+				{
+					/* TODO (asgari#1#): Complete optimization on NOTS and ANDS
+ */
+					
+					sort(isolevels, SUPRIMUM_BASED, wat);
+					if(left->operand == ALL)
+					{
+						this->operand = right->operand;
+						this->left = right->left;
+						this->right = right->right;
+					}
+					return;
+				}
+				/* TODO (asgari#1#): optimize non-isolevels */
+				
+			}
+			
 			condition(string cond, bool steminput = false)
 			{
 				// do some normalization
@@ -105,6 +217,8 @@ namespace search
 						}
 					}
 				}
+				
+				// remove sub phrases
 				for(int i = 0; i < phrases.size(); i++)
 				{
 					for(int j = 0; j < phrases.size(); j++)
@@ -121,36 +235,23 @@ namespace search
 						phrases.erase(phrases.begin() + i);
 				}
 				
-				// find the first NOT if exists
-				for(int i = 0; i < phrases.size(); i++)
+				// put AND instead of spaces
+				for(int i = 0; i < phrases.size() - 1; i++)
 				{
-					string phrase_str = cond.substr(phrases[i].index, phrases[i].length);
-					if(phrase_str == "NOT")
+					string left_phrase = cond.substr(phrases[i].index, phrases[i].length);
+					string right_phrase = cond.substr(phrases[i + 1].index, phrases[i + 1].length);
+					if(
+						(right_phrase != "AND" && right_phrase != "OR") &&
+						(left_phrase != "AND" && left_phrase != "OR") &&
+						left_phrase != "NOT"
+					)
 					{
-						// continue the recursion of conditions
-						/* TODO (asgari#1#): normalize the input condition for duplicate 
-						                     spaces and etc. */
-						
-						this->left = new condition(cond.substr(0, phrases[i].index));
-						this->right = new condition(cond.substr(phrases[i].index + 3));
-						this->operand = NOT;
-						return;
-					}
-				}
-				
-				// find the first AND if exists
-				for(int i = 0; i < phrases.size(); i++)
-				{
-					string phrase_str = cond.substr(phrases[i].index, phrases[i].length);
-					if(phrase_str == "AND")
-					{
-						// continue the recursion of conditions
-						/* TODO (asgari#1#): normalize the input condition for duplicate 
-						                     spaces and etc. */
-						
-						this->left = new condition(cond.substr(0, phrases[i].index));
-						this->right = new condition(cond.substr(phrases[i].index + 3));
-						this->operand = AND;
+						condition* constructed = new condition(cond.substr(0, phrases[i + 1].index) + " AND " + cond.substr(phrases[i + 1].index));
+						this->operand = constructed->operand;
+						this->word = constructed->word;
+						this->left = constructed->left;
+						this->right = constructed->right;
+						delete constructed;
 						return;
 					}
 				}
@@ -172,6 +273,41 @@ namespace search
 					}
 				}
 				
+				// find the first AND if exists
+				for(int i = 0; i < phrases.size(); i++)
+				{
+					string phrase_str = cond.substr(phrases[i].index, phrases[i].length);
+					if(phrase_str == "AND")
+					{
+						// continue the recursion of conditions
+						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						                     spaces and etc. */
+						
+						this->left = new condition(cond.substr(0, phrases[i].index));
+						this->right = new condition(cond.substr(phrases[i].index + 3));
+						this->operand = AND;
+						return;
+					}
+				}
+				
+				
+				// find the first NOT if exists
+				for(int i = 0; i < phrases.size(); i++)
+				{
+					string phrase_str = cond.substr(phrases[i].index, phrases[i].length);
+					if(phrase_str == "NOT")
+					{
+						// continue the recursion of conditions
+						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						                     spaces and etc. */
+						
+						this->left = new condition(cond.substr(0, phrases[i].index));
+						this->right = new condition(cond.substr(phrases[i].index + 3));
+						this->operand = NOT;
+						return;
+					}
+				}
+				
 				// if there's no operand or parantheses
 				if(cond.length() == phrases[0].length)
 				{
@@ -184,7 +320,21 @@ namespace search
 				}
 				
 				// otherwise
-				condition* constructed = new condition(cond.substr(phrases[0].index, phrases[0].length));
+				condition* constructed;
+				constructed = new condition(cond.substr(phrases[0].index, phrases[0].length));
+				/*if(phrases.size() == 1)
+				{
+					constructed = new condition(cond.substr(phrases[0].index, phrases[0].length));
+				}
+				else
+				{
+					string and_standared_cond = cond.substr(phrases[0].index, phrases[0].length);;
+					for(int i = 1; i < phrases.size(); i++)
+					{
+						and_standared_cond += " AND " + cond.substr(phrases[i].index, phrases[i].length);
+					}
+					constructed = new condition(and_standared_cond);
+				}*/
 				this->operand = constructed->operand;
 				this->word = constructed->word;
 				this->left = constructed->left;
@@ -225,6 +375,69 @@ namespace search
 					*res = *wat.find(word);
 				}
 				return res;
+			}
+			
+			string toString()
+			{
+				if(operand == CONTAINS)
+					return word;
+				if(operand == ALL)
+					return "";
+				string opstr = "AND";
+				if(operand == NOT)
+					opstr = "NOT";
+				if(operand == OR)
+					opstr = "OR";
+				return "(" + left->toString() + " " + opstr + " " + right->toString() + ")";
+			}
+			
+			int infimum(watable& wat)
+			{
+				if(operand == AND)
+				{
+					return 0;
+				}
+				if(operand == ALL)
+				{
+					return wat.getAll()->getCount();
+				}
+				if(operand == OR)
+				{
+					return left->infimum(wat) + right->infimum(wat);
+				}
+				if(operand == CONTAINS)
+				{
+					return wat.find(word)->getCount();
+				}
+				if(operand == NOT)
+				{
+					return left->infimum(wat) - right->suprimum(wat);
+				}
+			}
+			
+			int suprimum(watable& wat)
+			{
+				
+				if(operand == AND)
+				{
+					return left->suprimum(wat) + right->suprimum(wat);
+				}
+				if(operand == ALL)
+				{
+					return wat.getAll()->getCount();
+				}
+				if(operand == OR)
+				{
+					return left->suprimum(wat) + right->suprimum(wat);
+				}
+				if(operand == CONTAINS)
+				{
+					return wat.find(word)->getCount();
+				}
+				if(operand == NOT)
+				{
+					return left->suprimum(wat);
+				}
 			}
 			
 			/*

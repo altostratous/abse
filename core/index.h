@@ -68,11 +68,13 @@ namespace index
 			
 			merge(occurrance o)
 			{
+				// caution: this is not sorted
 				occurrances.push_back(o);
 			}
 			
 			merge(vector<occurrance>& occurrs)
 			{
+				// caution: this is not sorted
 				occurrances.insert(occurrances.end(), occurrs.begin(), occurrs.end());
 			}
 			

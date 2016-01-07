@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=1
 CompilerSettings=0000000000000000001000000
-UnitCount=20
+UnitCount=19
 
 [VersionInfo]
 Major=1
@@ -120,27 +120,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
-FileName=core\bool.h
-CompileCpp=1
-Folder=core
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit9]
-FileName=core\preprocess.h
-CompileCpp=1
-Folder=core
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit10]
 FileName=core\search.h
 CompileCpp=1
 Folder=core
@@ -150,17 +130,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
+[Unit10]
 FileName=core\util.h
+CompileCpp=1
 Folder=core
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
-CompileCpp=1
 
-[Unit12]
+[Unit11]
 FileName=abse.config
 Folder=
 Compile=0
@@ -168,9 +148,20 @@ Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
+
+[Unit12]
+FileName=rasekh.cpp
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+CompileCpp=1
 
 [Unit13]
-FileName=rasekh.cpp
+FileName=rasekh.txt
 CompileCpp=1
 Folder=
 Compile=1
@@ -180,25 +171,16 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=rasekh.txt
-Folder=
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit15]
 FileName=core\porter2_stemmer.cpp
-CompileCpp=1
 Folder=core
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+CompileCpp=1
 
-[Unit16]
+[Unit15]
 FileName=core\porter2_stemmer.h
 CompileCpp=1
 Folder=core
@@ -208,7 +190,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit16]
 FileName=core\multithread.h
 CompileCpp=1
 Folder=core
@@ -218,7 +200,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit17]
 FileName=sort.h
 CompileCpp=1
 Folder=
@@ -228,10 +210,20 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit18]
 FileName=output\phase2\main.cpp
 CompileCpp=1
 Folder=output/phase2
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit19]
+FileName=output\phase3\main.cpp
+CompileCpp=1
+Folder=output/phase3
 Compile=1
 Link=1
 Priority=1000
@@ -242,6 +234,16 @@ BuildCmd=
 FileName=output\phase3\main.cpp
 CompileCpp=1
 Folder=output/phase3
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit8]
+FileName=core\preprocess.h
+CompileCpp=1
+Folder=core
 Compile=1
 Link=1
 Priority=1000
