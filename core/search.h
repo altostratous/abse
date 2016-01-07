@@ -225,8 +225,27 @@ namespace search
 					*res = *wat.find(word);
 				}
 
-				// start of lower part adde by rasekh
 				
+				// here 2 funtions are added to return the suprimum of a condition
+				// in fact two functions are written.one of them can be true				
+				int suprimum()
+				{
+					if(wanalysis.getCount().word1 > wanalysis.getCount().word2)
+						return wanalysis.getCount().word1;
+					if(wanalysis.getCount().word1 <= wanalysis.getCount().word2)
+						return wanalysis.getCount().word2;
+				}
+				
+				int suprimum()
+				{
+					if(datarows.word1.size() > datarows.word2.size())
+						return	datarows.word1.size();
+					if(datarows.word1.size() <= datarows.word2.size())
+						return 	datarows.word2.size();
+				}
+				
+				
+				// start of lower part adde by rasekh
 				
 				void andsort(condition * c)
 				{
@@ -243,7 +262,7 @@ namespace search
 						andsort(conditon * c.leftanal);
 					}
 				}
-			
+				
 				void orsort(condition * c)
 				{
 					if(operand == OR)
