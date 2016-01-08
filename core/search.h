@@ -38,47 +38,81 @@ namespace search
 			condition* left;
 			condition* right;
 			string word;
-			sort(vector<condition**> list, condition_sort_logic logic, watable& wat)
+			void sort(vector<condition**> list, condition_sort_logic logic, watable& wat)
 			{
-				for(int i = 0; i < list.size(); i++)
+				bool test = false;
+				for(int i = 0; i < list.size() - 1; i++)
 				{
 					for(int j = i + 1; j < list.size(); j++)
 					{
 						if(comp(*(list[i]), *(list[j]), logic, wat) > 0)
 						{
-							condition* temp = *(list[i]);
-							*(list[i]) = *(list[j]);
-							*(list[j]) = temp;
+							condition* temp = *(list[j]);
+							*(list[j]) = *(list[i]);
+							*(list[i]) = temp;
+							test = true;
 						}
 					}
+				}
+				if(test)
+				{
+					sort(list, logic, wat);
 				}
 			}
 			int comp(condition* c1, condition* c2, condition_sort_logic logic, watable& wat)
 			{
+				// to prevent condition recursion
+				if(c1->left == c2 || c1->right == c1 || c2->left == c1 || c2->right == c1)
+					return -1;
+				int inf2 = c2->infimum(wat);
+				int inf1 = c1->infimum(wat);
+				int sup2 = c2->suprimum(wat);
+				int sup1 = c1->suprimum(wat);
 				if(logic == INFIMUM_BASED)
 				{
-					return c2->infimum(wat) - c1->infimum(wat);
+					if(inf2 != inf1)
+						return inf2 - inf1;
+					else
+						if(sup1 == sup2)
+							return 0;
+						else
+							return sup2 - sup1;
 				}
 				
 				if(logic == SUPRIMUM_BASED)
 				{
-					return c1->suprimum(wat) - c2->suprimum(wat);
+					if(sup1 != sup2)
+						return sup1 - sup2;
+					else
+						if(inf1 == inf2)
+							return 0;
+						else
+							return inf1 - inf2;
+				}
+			}
+			void binarizeNOTs()
+			{
+				if(operand == AND)
+				{
+					if(left->operand == NOT)
+					{
+						operand = NOT;
+						condition* temp = left->right;
+						left = right;
+						right = temp;
+						left->binarizeNOTs();
+					}
 				}
 			}
 		public:
 			vector<condition**> getIsoLevels()
 			{
 				vector<condition**> res;
-				if(operand == ALL || operand == CONTAINS)
+				if(operand == ALL || operand == CONTAINS || operand == NOT)
 				{
 					return res;
 				}
-				if(
-					right->operand == operand || 
-					(operand == AND && right->operand == NOT) || 
-					(operand == NOT && right->operand == AND) || 
-					right->operand == ALL
-				)
+				if(right->operand == operand)
 				{
 					vector<condition**> rightside = right->getIsoLevels();
 					res.insert(res.end(), rightside.begin(), rightside.end());
@@ -88,12 +122,7 @@ namespace search
 					if(operand != NOT)
 						res.push_back(&right);
 				}
-				if(
-					left->operand == operand || 
-					(operand == AND && left->operand == NOT) || 
-					(operand == NOT && left->operand != OR) ||
-					left->operand == ALL
-				)
+				if(left->operand == operand)
 				{
 					vector<condition**> leftside = left->getIsoLevels();
 					res.insert(res.end(), leftside.begin(), leftside.end());
@@ -133,12 +162,23 @@ namespace search
  */
 					
 					sort(isolevels, SUPRIMUM_BASED, wat);
+					
+					// optimize NOTs
+					binarizeNOTs();
+					// remove alls 
 					if(left->operand == ALL)
 					{
 						this->operand = right->operand;
 						this->left = right->left;
 						this->right = right->right;
 					}
+					if(right->operand == ALL)
+					{
+						this->operand = left->operand;
+						this->left = left->left;
+						this->right = left->right;
+					}
+					
 					return;
 				}
 				/* TODO (asgari#1#): optimize non-isolevels */
@@ -411,6 +451,8 @@ namespace search
 				}
 				if(operand == NOT)
 				{
+					if(left->operand == ALL)
+						return  wat.getAll()->getCount() - right->suprimum(wat);
 					return left->infimum(wat) - right->suprimum(wat);
 				}
 			}
@@ -436,6 +478,10 @@ namespace search
 				}
 				if(operand == NOT)
 				{
+					if(left->operand == ALL)
+					{
+						return  wat.getAll()->getCount() - right->infimum(wat);
+					}
 					return left->suprimum(wat);
 				}
 			}

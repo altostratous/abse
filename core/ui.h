@@ -96,6 +96,7 @@ namespace ui
 			config conf;
 			watable wat;
 			bool pleaseexit;
+			bool ranconcommand;
 			// commands
 			exit()
 			{
@@ -350,6 +351,7 @@ namespace ui
 			cmdui()
 			{
 				pleaseexit = false;
+				ranconcommand = false;
 				about();
 				help();
 			}
@@ -357,11 +359,30 @@ namespace ui
 			
 			void start()
 			{
+				streambuf* orig = cin.rdbuf();
 				while(!pleaseexit)
 				{
 					// get command and process
 					string command = "";
-					cin>>command;
+					if(ranconcommand)
+					{
+						cin>>command;
+						if(command == "")
+						{
+    						std::cin.rdbuf(orig);
+							continue;
+						}
+					}
+					else
+					{
+						if(conf.isset("Command"))
+						{
+							istringstream oss(conf.getString("Command"));
+							cin.rdbuf(oss.rdbuf());
+							cin>>command;
+							ranconcommand = true;
+						}
+					}
 					
 					if(command == "exit")
 					{
