@@ -134,6 +134,10 @@ namespace index
 							i++;
 							continue;
 						}
+						if((*(i - 1)).file_id == (*j).file_id)
+						{
+							ocs.push_back(*j);
+						}
 						j++;
 					}
 					occurrances = ocs;

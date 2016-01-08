@@ -179,6 +179,7 @@ namespace ui
 							files.insert(make_pair(o.file_id, 1));
 						}
 					}
+					cout<<"Found "<<yellow<<distance(files.begin(), files.end())<<white<<" files."<<endl;
 					for(map<int, int>::iterator i = files.begin(); i != files.end(); i++)
 					{
 						cout<<yellow<<"File"<<blue<<"#"<<yellow<<(*i).first<<blue<<" "<<white<<f.getFileNameById((*i).first)<<" Found "<<yellow<<(*i).second<<white<<" items."<<endl;
@@ -324,11 +325,13 @@ namespace ui
 				getline(cin, cond_str);
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
 				condition cond(cond_str, conf.getInteger("StemInput"));
-				cout<<"Understood: " + cond.toString() <<endl;
+				if(conf.getInteger("EchoOptimization"))
+					cout<<red<<"Understood: " + cond.toString() <<endl<<white;
 				cond.optimize(wat);
-				cout<<"Optimized: " + cond.toString() <<endl;
-				//wanalysis wa = *cond.filter(wat);
-				//report(wa, f);
+				if(conf.getInteger("EchoOptimization"))
+					cout<<green<<"Optimized: " + cond.toString() <<endl<<white;
+				wanalysis wa = *cond.filter(wat);
+				report(wa, f);
 			}
 			
 			view()

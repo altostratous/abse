@@ -89,9 +89,14 @@ namespace search
 						else
 							return inf1 - inf2;
 				}
+				
 			}
 			void binarizeNOTs()
 			{
+				if(operand == CONTAINS || operand == ALL)
+				{
+					return;
+				}
 				if(operand == AND)
 				{
 					if(left->operand == NOT)
@@ -103,6 +108,62 @@ namespace search
 						left->binarizeNOTs();
 					}
 				}
+				else
+				{
+					left->binarizeNOTs();
+					right->binarizeNOTs();
+				}
+			}
+			// iptimizes the query unless the NOTS
+			void inner_optimize(watable& wat)
+			{
+				// find pointers to the conditions having same level to this condition
+				// it means:
+				//		1- NOT, AND, ALL
+				// 		2- OR, ALL
+				
+				// the isolevel conditions
+				if(operand == CONTAINS || operand == ALL)
+					return;
+				vector<condition**> isolevels = getIsoLevels();
+				left->inner_optimize(wat);
+				right->inner_optimize(wat);
+				if(operand == OR)
+				{
+					sort(isolevels, INFIMUM_BASED, wat);
+					if(left->operand == ALL)
+					{
+						operand = ALL;
+					}
+					return;
+				}
+				if(operand == AND)
+				{
+					/* TODO (asgari#1#): Complete optimization on NOTS and ANDS
+ */
+					
+					sort(isolevels, SUPRIMUM_BASED, wat);
+					
+					// optimize NOTs
+					//binarizeNOTs();
+					// remove alls 
+					if(left->operand == ALL)
+					{
+						this->operand = right->operand;
+						this->left = right->left;
+						this->right = right->right;
+					}
+					if(right->operand == ALL)
+					{
+						this->operand = left->operand;
+						this->left = left->left;
+						this->right = left->right;
+					}
+					
+					return;
+				}
+				/* TODO (asgari#1#): optimize non-isolevels */
+				
 			}
 		public:
 			vector<condition**> getIsoLevels()
@@ -133,57 +194,12 @@ namespace search
 				}
 				return res;
 			}
-			// iptimizes the query
 			void optimize(watable& wat)
 			{
-				// find pointers to the conditions having same level to this condition
-				// it means:
-				//		1- NOT, AND, ALL
-				// 		2- OR, ALL
-				
-				// the isolevel conditions
-				if(operand == CONTAINS || operand == ALL)
-					return;
-				vector<condition**> isolevels = getIsoLevels();
-				left->optimize(wat);
-				right->optimize(wat);
-				if(operand == OR)
-				{
-					sort(isolevels, INFIMUM_BASED, wat);
-					if(left->operand == ALL)
-					{
-						operand = ALL;
-					}
-					return;
-				}
-				if(operand == AND)
-				{
-					/* TODO (asgari#1#): Complete optimization on NOTS and ANDS
- */
-					
-					sort(isolevels, SUPRIMUM_BASED, wat);
-					
-					// optimize NOTs
-					binarizeNOTs();
-					// remove alls 
-					if(left->operand == ALL)
-					{
-						this->operand = right->operand;
-						this->left = right->left;
-						this->right = right->right;
-					}
-					if(right->operand == ALL)
-					{
-						this->operand = left->operand;
-						this->left = left->left;
-						this->right = left->right;
-					}
-					
-					return;
-				}
-				/* TODO (asgari#1#): optimize non-isolevels */
-				
+				inner_optimize(wat);
+				binarizeNOTs();
 			}
+			
 			
 			condition(string cond, bool steminput = false)
 			{
