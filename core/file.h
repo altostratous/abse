@@ -94,7 +94,9 @@ namespace disk
 					ifstream fin((*i).c_str());
 					
 					int paragraph_id = 0;
+					int line_id = 0;
 					string word = "";
+					char prev_char = '\000';
 					while(!fin.eof())
 					{
 						char c;
@@ -106,8 +108,12 @@ namespace disk
 						{
 							if(c=='\n')
 							{
-								paragraph_id++;
+								line_id++;
 								fout<<endl;
+							}
+							if(c=='\n' && prev_char == '\n')
+							{
+								paragraph_id++;
 							}
 							if(word.length() > 0)
 							{
@@ -116,6 +122,7 @@ namespace disk
 								o.index = index - word.length() - 1;
 								o.length = word.length();
 								o.paragraph_id = paragraph_id;
+								o.line_id = line_id;
 								fout << p.process(word, o) << " ";
 								word = "";
 							}

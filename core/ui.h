@@ -325,11 +325,14 @@ namespace ui
 				getline(cin, cond_str);
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
 				condition cond(cond_str, conf.getInteger("StemInput"));
-				if(conf.getInteger("EchoOptimization"))
-					cout<<red<<"Understood: " + cond.toString() <<endl<<white;
-				cond.optimize(wat);
-				if(conf.getInteger("EchoOptimization"))
-					cout<<green<<"Optimized: " + cond.toString() <<endl<<white;
+				if(conf.getInteger("DoOptimization"))
+				{
+					if(conf.getInteger("EchoOptimization"))
+						cout<<red<<"Understood: " + cond.toString() <<endl<<white;
+					cond.optimize(wat);
+					if(conf.getInteger("EchoOptimization"))
+						cout<<green<<"Optimized: " + cond.toString() <<endl<<white;
+				}
 				wanalysis wa = *cond.filter(wat);
 				report(wa, f);
 			}

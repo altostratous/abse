@@ -26,6 +26,7 @@ namespace ds
 		int index;
 		int length;
 		int paragraph_id;
+		int line_id;
 	};
 	/* TODO (rasekh#1#): Add datastructure for dictionary and spell 
 	                     check and suggest */
