@@ -36,8 +36,8 @@ namespace disk
 	*/
 	class file
 	{
-		/* TODO (rasekh#1#): Implement properties. */
-		/* TODO (asgari#1#): Implement iterating functions. */
+		/* DONE (rasekh#1#): Implement properties. */
+		/* DONE (asgari#1#): Implement iterating functions. */
 		private:
 			vector<string>filenames;
 			string wordSeperators;
@@ -229,7 +229,7 @@ namespace disk
 	};
 	
 }
-/* TODO (asagri#1#): manage paragraph counting */
+/* DONE (asagri#1#): manage paragraph counting */
 
 #include "multithread.h"
 

@@ -139,7 +139,7 @@ namespace search
 				}
 				if(operand == AND)
 				{
-					/* TODO (asgari#1#): Complete optimization on NOTS and ANDS
+					/* DONE (asgari#1#): Complete optimization on NOTS and ANDS
  */
 					
 					sort(isolevels, SUPRIMUM_BASED, wat);
@@ -162,7 +162,7 @@ namespace search
 					
 					return;
 				}
-				/* TODO (asgari#1#): optimize non-isolevels */
+				/* DONE (asgari#1#): optimize non-isolevels */
 				
 			}
 		public:
@@ -220,7 +220,7 @@ namespace search
 						cond = cond.substr(0, i) + cond.substr(i + 1);
 					}
 				}
-				/* TODO (asgari#1#): to parse the string to formatted conditions */
+				/* DONE (asgari#1#): to parse the string to formatted conditions */
 				
 				// find the search phrases
 				int par_depth = 0;
@@ -319,7 +319,7 @@ namespace search
 					if(phrase_str == "OR")
 					{
 						// continue the recursion of conditions
-						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						/* DONE (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
 						this->left = new condition(cond.substr(0, phrases[i].index));
@@ -336,7 +336,7 @@ namespace search
 					if(phrase_str == "AND")
 					{
 						// continue the recursion of conditions
-						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						/* DONE (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
 						this->left = new condition(cond.substr(0, phrases[i].index));
@@ -354,7 +354,7 @@ namespace search
 					if(phrase_str == "NOT")
 					{
 						// continue the recursion of conditions
-						/* TODO (asgari#1#): normalize the input condition for duplicate 
+						/* DONE (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
 						this->left = new condition(cond.substr(0, phrases[i].index));

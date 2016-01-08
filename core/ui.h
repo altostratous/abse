@@ -312,8 +312,6 @@ namespace ui
 			{
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
 				f.setWordSeperators(conf.getString("WordSeperators"));
-				/* TODO (asgari#1#): Implement multithreaded version */
-				
 				//fasterate(f, "", wat, conf.getInteger("ThreadsCount"));
 				f.iterate(wat);
 				cout<<green<<"Indexed the files successfully!"<<white<<endl;
