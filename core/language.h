@@ -2,6 +2,9 @@
 #define ABSE_PORTER 1
 
 #include <string>
+#include <map>
+#include <iostream>
+#include <cmath>
 
 #include "index.h"
 #include "porter2_stemmer.h"
@@ -36,31 +39,59 @@ namespace index
 	
 	class keymap
 	{
-		/* TODO (rasekh#1#): Add members to store a keymap for furthure 
+		/* DONE (asgari#1#): Add members to store a keymap for furthure 
 		                     use */
-		
+		map<char, pair<int, int>> char_table;
 		public:
 			keymap(string path)
 			{
-				/* TODO (rasekh#1#): Construct the keymap from the file given.
+				/* DONE (asgari#1#): Construct the keymap from the file given.
 				                     assume that keyboard chars in the same rows 
 				                     are given in lines and each line contains chars 
 				                     immediate after each other just like this:
 				                     qwertyuiop[]
 				                     asdfghjkl;'
 				                     zxcvbnm,./ */
-				
+				ifstream fin(path);
+				string tablestr = "";
+				while(!fin.eof())
+				{
+					char c;
+					fin.get(c);
+					tablestr += c;
+				}
+				construct_char_table(tablestr);
+				fin.close();
 			}
-			
+			construct_char_table(string tablestr)
+			{
+				int row = 0, col = 0;
+				for(int i = 0; i < tablestr.length(); i++)
+				{
+					if(tablestr[i] == '\n')
+					{
+						row++;
+						col = 0;
+						continue;
+					}
+					char_table.insert(make_pair(tablestr[i], make_pair(col, row)));
+					col++;
+				}
+			}
 			double distance(char c1, char c2)
 			{
-				/* TODO (rasekh#1#): Calculate the distance between two keyboard 
+				/* DONE (asgari#1#): Calculate the distance between two keyboard 
 				                     chars according to the fed keymap.
 									 the distance sould have a threshold, 
 									 it means the distance between far keys should be
 									 the same but the distance between near keys should
 									 differ more */
-				
+				pair<int, int> c1coords = char_table[c1];
+				pair<int, int> c2coords = char_table[c2];
+				double euclid_distance = pow(pow((double)(c1coords.first - c2coords.first), 2.0) + pow((double)(c1coords.second - c2coords.second), 2.0), 0.5);
+				if(euclid_distance > 1)
+					euclid_distance = 2;
+				return euclid_distance;
 			}
 	};
 	
@@ -88,10 +119,21 @@ namespace index
 			
 			double good_distance(string word1, string word2)
 			{
-				/* TODO (rasekh#1#): calculate the distance between the words 
+				/* DONE (asgari#1#): calculate the distance between the words 
 				                     using the statistical algorithm on wich we 
 				                     aggreed. */
-				
+				double sum = 0;
+				for(int i = 0; i < word1.length(); i++)
+				{
+					for(int j = 0; j < word2.length(); j++)
+					{
+						if(abs(i - j) < 2)
+							sum += acci->distance(word1[i], word2[j]) / (abs(j - i) * 3 + 1);
+					}
+				}
+				if(abs((int)word1.length() - (int)word2.length()) > 1)
+					sum *= word1.length() * word2.length();
+				return sum;
 			}
 			
 			double deep_distance(string word1, string word2, int mark)

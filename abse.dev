@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=1
 CompilerSettings=0000000000000000001000000
-UnitCount=19
+UnitCount=21
 
 [VersionInfo]
 Major=1
@@ -231,9 +231,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit20]
-FileName=output\phase3\main.cpp
+FileName=output\phase4\main.cpp
 CompileCpp=1
-Folder=output/phase3
+Folder=output/phase4
 Compile=1
 Link=1
 Priority=1000
@@ -246,6 +246,15 @@ CompileCpp=1
 Folder=core
 Compile=1
 Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit21]
+FileName=keymap.config
+Folder=
+Compile=0
+Link=0
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
