@@ -7,9 +7,9 @@ LeftChar=1
 Order=
 Focused=7
 [Editor_6]
-CursorCol=2
-CursorRow=33
-TopLine=10
+CursorCol=16
+CursorRow=35
+TopLine=27
 LeftChar=1
 [Editor_1]
 CursorCol=1
@@ -19,7 +19,7 @@ LeftChar=1
 [Editor_2]
 CursorCol=1
 CursorRow=344
-TopLine=8
+TopLine=13
 LeftChar=1
 [Editor_5]
 CursorCol=42
@@ -52,7 +52,7 @@ CursorRow=6
 TopLine=1
 LeftChar=1
 [Editor_3]
-CursorCol=1
-CursorRow=1
-TopLine=3
+CursorCol=3
+CursorRow=125
+TopLine=123
 LeftChar=1
