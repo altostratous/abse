@@ -7,6 +7,7 @@
 #define ABSE_DS 1
 
 #include <functional>
+#include <map>
 
 using namespace std;
 
@@ -36,74 +37,80 @@ namespace ds
 	{
 	    private:
 	        trienode* parent;
-	        trienode* children[50];
+	        map<char, trienode*> children;
 	        char keypart;
-	        int count;
-	        bool is_end;
-	        void addchild(trienode* child)
+	        string value;
+	        int mark;
+	        void inner_add(trienode* child)
 	        {
-	            children[count] = child;
-	            child->parent = this;
-	            count++;    
+	        	if(children.count(child->keypart) == 0)
+	        	{
+	        		children.insert(make_pair(child->keypart, child));
+	        		child->parent = this;
+				}
+				else
+				{
+					if(child->mark > 0)
+						children[child->keypart]->mark++;
+				}
 	        }
 	    public:
-	        trienode(trienode* parent, char keypart)
+	        trienode(trienode* parent, char keypart, string value, int mark)
 	        {
-	            is_end = false;
+	        	this->mark = mark;
+	            this->value = value;
 	            this->parent = parent;
-	            count = 0;
 	            this->keypart = keypart;
 	        }
-	        void addtrienode(string key)
+	        void add(string key, string value)
 	        {
-	            if(key.length() == 0)
-	            {
-	                is_end = true;
-	                return;
-	            }
-	            int i;
-	            bool test = false;
-	            for(i = 0; i < count; i++)
-	            {
-	                if(children[i]->keypart == key[0])
-	                {
-	                    test = true;
-	                    break;
-	                }
-	            }
-	            if(test)
-	            {
-	                children[i]->addtrienode(key.substr(1));
-	            }
-	            else
-	            {
-	                trienode* ch = new trienode(this, key[0]);
-	                addchild(ch);
-	                addtrienode(key);
-	            }
+	        	if(key.length() == 1)
+	        	{	
+		        	inner_add(new trienode(this, key[0], value, 1));
+		        	return;
+		        }
+		        else
+		        {
+		        	inner_add(new trienode(this, key[0], value, 0));
+		        	children[key[0]]->add(key.substr(1), value);
+				}
 	        }
 	        
 	        bool haskey(string key)
 	        {
 	            if(key.length() == 0)
 	            {
-	                return is_end;
+	                return mark > 0;
 	            }
-	            bool test = false;
-	            int i;
-	            for(i = 0; i < count; i++)
-	            {
-	                if(children[i]->keypart == key[0])
-	                {
-	                    test = true;
-	                    break;
-	                }
-	            }
-	            if(test)
-	                return children[i]->haskey(key.substr(1));
+	            if(children.count(key[0]) > 0)
+	                return children[key[0]]->haskey(key.substr(1));
 	            else
 	                return false;
 	        }
+	        
+	        trienode* find(string key)
+	        {
+	        	if(key.length() == 0)
+	            {
+	                if(mark > 0)
+	                	return this;
+	                else
+	                	return NULL;
+	            }
+	            if(children.count(key[0]) > 0)
+	                return children[key[0]]->find(key.substr(1));
+	            else
+	                return NULL;
+			}
+			
+			int getMark()
+			{
+				return mark;
+			}
+			string getValue()
+			{
+				return value;
+			}
 	};
 }
 
