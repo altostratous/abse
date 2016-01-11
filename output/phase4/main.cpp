@@ -23,9 +23,9 @@ int main(int argc, char** argv) {
 	}
 	*/
 	
-	//cmdui cmd;
+	cmdui cmd;
 	
-	//cmd.start();
+	cmd.start();
 	/*distancing dising("keymap.config");
 	while(1)
 	{
@@ -34,19 +34,5 @@ int main(int argc, char** argv) {
 		cin>>w2;
 		cout<<dising.good_distance(w1, w2)<<endl;
 	}*/
-	
-	trienode* root = new trienode(NULL, '\000', "", 0);
-	for(int i = 0; i < 10; i++)
-	{
-		string input;
-		cin>> input;
-		root->add(input, input);
-	}
-	for(int i = 0; i < 5; i++)
-	{
-		string key;
-		cin>> key;
-		cout<< root->find(key)->getValue() << endl << root->find(key)->getMark() << endl;
-	}
 	return 0;
 }

@@ -153,10 +153,7 @@ namespace index
 			                       2- learning rate
 			                       ... */
 			
-			vector<string> nearests(string input)
-			{
-				// go deep in the trie and return the nearest neighbours using good_distance
-			}
+			
 		public:
 			vector<string> recommand(string input)
 			{
@@ -166,7 +163,7 @@ namespace index
 				// sort the words using LivenSteign
 				// sort the reocmmanded words Using good_distance
 			}
-			vector<string> raterecom(string input, string recommanded, int mark)
+			void raterecom(string input, string recommanded, int mark)
 			{
 				
 			}

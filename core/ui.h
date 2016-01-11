@@ -16,6 +16,7 @@ using namespace disk;
 using namespace index;
 using namespace std;
 using namespace search;
+using namespace ds;
 
 namespace ui
 {
@@ -125,6 +126,7 @@ namespace ui
 				cout<<blue<<"config "<<yellow<<"[/s]"<<endl;
 				cout<<blue<<"search "<<yellow<<"[search-conditions]"<<endl;
 				cout<<blue<<"view "<<yellow<<"[file-id]"<<endl;
+				cout<<blue<<"mark "<<yellow<<"[word]"<<endl;
 				cout<<blue<<"index"<<endl;
 				cout<<blue<<"save "<<endl;
 				cout<<blue<<"exit"<<endl;
@@ -187,6 +189,18 @@ namespace ui
 				}
 				if(conf.isset("LogFile"))
 					fout.close();
+			}
+			
+			mark()
+			{
+				string word;
+				cin>> word;
+				trienode* dic = wat.getDictionary();
+				vector<string> nearests = dic->nearests(word);
+				for(int i = 0; i < nearests.size(); i++)
+				{
+					cout<<nearests[i]<<endl;
+				}
 			}
 			
 			find()
@@ -471,6 +485,13 @@ namespace ui
 						view();
 						continue;
 					}
+					
+					if(command == "mark")
+					{
+						mark();
+						continue;
+					}
+					
 					cout<<red<<"No such command: "<<command<<endl<<white;
 					getline(cin, command);
 				}

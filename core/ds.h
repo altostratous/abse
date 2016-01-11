@@ -55,6 +55,42 @@ namespace ds
 				}
 	        }
 	    public:
+//			bool containsChild(char key)
+//			{
+//				return children.count(key) > 0;
+//			}
+			
+			vector<string> nearests(string input)
+			{
+				// go deep in the trie and return the nearest neighbours using good_distance
+				vector<string> res;
+				if(input.length() == 0)
+				{
+					res.push_back(value);
+					return res;
+				}
+				for(map<char, trienode*>::iterator i = children.begin(); i != children.end(); i++)
+				{
+					if(i->first == input[0])
+					{
+						vector<string> subres = i->second->nearests(input.substr(1));
+						res.insert(res.end(), subres.begin(), subres.end());
+					}
+					if(input.length() > 1)
+						if(i->first == input[1])
+						{
+							vector<string> subres = i->second->nearests(input.substr(1));
+							res.insert(res.end(), subres.begin(), subres.end());
+						}
+					if(input.length() > 2)
+						if(i->first == input[2])
+						{
+							vector<string> subres = i->second->nearests(input.substr(1));
+							res.insert(res.end(), subres.begin(), subres.end());
+						}
+				}
+				return res;
+			}
 	        trienode(trienode* parent, char keypart, string value, int mark)
 	        {
 	        	this->mark = mark;

@@ -304,6 +304,7 @@ namespace ds
 	class watable : public analysis
 	{
 		private:
+			trienode* dic;
 			hash<string>inner_hash;
 			int hashcount;
 			vector<datarow> datarows;
@@ -366,6 +367,10 @@ namespace ds
 			}
 			
 			/* TODO (rasekh#1#): Get the dictionary from words */
+			trienode* getDictionary()
+			{
+				return dic;
+			}
 			
 			
 			watable(int hashcount = 40000)
@@ -378,6 +383,7 @@ namespace ds
 					row.hash = i;
 					datarows.push_back(row);
 				}
+				dic = new trienode(NULL, '\000', "", 0);
 			}
 			
 			string process(string word, occurrance o)
@@ -385,6 +391,7 @@ namespace ds
 				wanalysis* wa = new wanalysis(word);
 				wa->process(word, o);
 				insert(wa);
+				dic->add(word, word);
 				return word;
 			}
 			
