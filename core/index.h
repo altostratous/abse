@@ -388,9 +388,12 @@ namespace ds
 			
 			string process(string word, occurrance o)
 			{
-				wanalysis* wa = new wanalysis(word);
-				wa->process(word, o);
-				insert(wa);
+				/* TODO (asgari#1#): Uncomment indexing lines
+ */
+				
+				//wanalysis* wa = new wanalysis(word);
+				//wa->process(word, o);
+				//insert(wa);
 				dic->add(word, word);
 				return word;
 			}

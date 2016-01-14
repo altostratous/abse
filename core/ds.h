@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <map>
+#include <set>
 
 using namespace std;
 
@@ -54,15 +55,12 @@ namespace ds
 						children[child->keypart]->mark++;
 				}
 	        }
-	    public:
-//			bool containsChild(char key)
-//			{
-//				return children.count(key) > 0;
-//			}
-			
-			vector<string> nearests(string input)
+	        
+			vector<string> inner_nearests(string input)
 			{
 				// go deep in the trie and return the nearest neighbours using good_distance
+				if(value == "cat")
+					cout<<value<<endl;
 				vector<string> res;
 				if(input.length() == 0)
 				{
@@ -71,26 +69,78 @@ namespace ds
 				}
 				for(map<char, trienode*>::iterator i = children.begin(); i != children.end(); i++)
 				{
-					if(i->first == input[0])
+					if(i->second->keypart == 'c')
 					{
-						vector<string> subres = i->second->nearests(input.substr(1));
-						res.insert(res.end(), subres.begin(), subres.end());
+						int kdfj = 0;
+					}
+					if(i->second->keypart == 'a')
+					{
+						int kdfj = 0;
+					}
+					if(i->second->keypart == 't')
+					{
+						int kdfj = 0;
+					}
+					if(i->second->keypart == input[0])
+					{
+						vector<string> subres = i->second->inner_nearests(input.substr(1));
+						res.insert(res.begin(), subres.begin(), subres.end());
+					}
+					if(i->second->containsChild(input[0]))
+					{
+						vector<string> subres = i->second->children[input[0]]->inner_nearests(input.substr(1));
+						res.insert(res.begin(), subres.begin(), subres.end());
 					}
 					if(input.length() > 1)
-						if(i->first == input[1])
+					{
+						if(i->second->keypart == input[1])
 						{
-							vector<string> subres = i->second->nearests(input.substr(1));
-							res.insert(res.end(), subres.begin(), subres.end());
+							vector<string> subres = i->second->inner_nearests(input.substr(2));
+							res.insert(res.begin(), subres.begin(), subres.end());
 						}
-					if(input.length() > 2)
-						if(i->first == input[2])
+						if(i->second->containsChild(input[1]))
 						{
-							vector<string> subres = i->second->nearests(input.substr(1));
-							res.insert(res.end(), subres.begin(), subres.end());
+							vector<string> subres = i->second->children[input[1]]->inner_nearests(input.substr(2));
+							res.insert(res.begin(), subres.begin(), subres.end());
 						}
+					}
 				}
 				return res;
 			}
+	    public:
+	    	set<string> nearests(string input)
+	    	{
+	    		set<string> res;
+	    		vector<string> inner = inner_nearests(input);
+	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
+	    		{
+	    			res.insert(*i);
+				}
+				return res;
+			}
+			
+			map<string, int> marked_nearests(string input)
+			{
+	    		map<string, int> res;
+	    		vector<string> inner = inner_nearests(input);
+	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
+	    		{
+	    			if(res.count(*i) > 0)
+	    			{
+	    				res[*i]++;
+	    			}
+	    			else
+	    			{
+	    				res.insert(make_pair(*i, 1));
+					}
+				}
+				return res;
+			}
+			bool containsChild(char key)
+			{
+				return children.count(key) > 0;
+			}
+			
 	        trienode(trienode* parent, char keypart, string value, int mark)
 	        {
 	        	this->mark = mark;

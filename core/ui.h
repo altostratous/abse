@@ -8,6 +8,7 @@
 #include<vector>
 #include <windows.h>
 #include <map>
+#include <set>
 
 #include "util.h"
 #include "search.h"
@@ -196,10 +197,11 @@ namespace ui
 				string word;
 				cin>> word;
 				trienode* dic = wat.getDictionary();
-				vector<string> nearests = dic->nearests(word);
-				for(int i = 0; i < nearests.size(); i++)
+				cout<< (dic->haskey(word) ? "the word itself exists" : "the word doesnot exist")<<endl;
+				map<string, int> nearests = dic->marked_nearests(word);
+				for(map<string, int>::iterator i = nearests.begin(); i != nearests.end(); i++)
 				{
-					cout<<nearests[i]<<endl;
+					cout<<i->first<<"\t"<<i->second<<endl;
 				}
 			}
 			
