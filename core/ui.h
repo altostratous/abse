@@ -198,8 +198,8 @@ namespace ui
 				cin>> word;
 				trienode* dic = wat.getDictionary();
 				cout<< (dic->haskey(word) ? "the word itself exists" : "the word doesnot exist")<<endl;
-				map<string, int> nearests = dic->marked_nearests(word);
-				for(map<string, int>::iterator i = nearests.begin(); i != nearests.end(); i++)
+				vector<pair<int, string>> nearests = dic->marked_nearests(word, new keymap("keymap.config"));
+				for(vector<pair<int, string>>::iterator i = nearests.begin(); i != nearests.end(); i++)
 				{
 					cout<<i->first<<"\t"<<i->second<<endl;
 				}

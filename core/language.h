@@ -93,6 +93,16 @@ namespace index
 					euclid_distance = 2;
 				return euclid_distance;
 			}
+			vector<char> nearests(char input, double maxdis)
+			{
+				vector<char> res;
+				for(map<char, pair<int, int>>::iterator i = char_table.begin(); i != char_table.end(); i++)
+				{
+					if(distance(i->first, input) <= maxdis)
+						res.push_back(i->first);
+				}
+				return res;
+			}
 	};
 	
 	class distancing
@@ -145,7 +155,9 @@ namespace index
 	};
 	
 	/* TODO (asgari#1#): Designing the input assistant */
-	class spellcheck : public trienode
+	/* TODO (asgari#1#): Migrate this to trienode */
+	
+	class spellcheck
 	{
 		private:
 			/* TODO (rasekh#1#): Add some configurations:
@@ -180,6 +192,215 @@ namespace index
 				                     should be storable and restorable. Do restore 
 				                     the system in here */
 				
+			}
+	};
+}
+
+using namespace index;
+
+namespace ds
+{
+	/* DONE (asgari#1#): Add datastructure for dictionary and spell 
+	                     check and suggest */
+	                     
+	
+	class trienode
+	{
+	    private:
+	        trienode* parent;
+	        map<char, trienode*> children;
+	        char keypart;
+	        string value;
+	        int mark;
+	        void inner_add(trienode* child)
+	        {
+	        	if(children.count(child->keypart) == 0)
+	        	{
+	        		children.insert(make_pair(child->keypart, child));
+	        		child->parent = this;
+				}
+				else
+				{
+					if(child->mark > 0)
+					{
+						children[child->keypart]->mark++;
+						if(children[child->keypart]->value == "")
+						{
+							children[child->keypart]->value = child->value;
+						}
+					}
+				}
+	        }
+	        
+			vector<string> inner_nearests(string input, keymap* km)
+			{
+				// go deep in the trie and return the nearest neighbours using good_distance
+				vector<string> res;
+				if(input.length() < 2)
+				{
+					if(value != "")
+					{
+						res.push_back(value);
+					}
+					vector<string>subres = first_level_words();
+					res.insert(res.end(), subres.begin(), subres.end());
+					if(input.length() == 0)
+						return res;
+				}
+				for(map<char, trienode*>::iterator i = children.begin(); i != children.end(); i++)
+				{
+					if(i->second->keypart == input[0])
+					{
+						vector<string> subres = i->second->inner_nearests(input.substr(1), km);
+						res.insert(res.end(), subres.begin(), subres.end());
+					}
+					if(i->second->containsChild(input[0]))
+					{
+						vector<string> subres = i->second->children[input[0]]->inner_nearests(input.substr(1), km);
+						res.insert(res.end(), subres.begin(), subres.end());
+					}
+					if(input.length() > 1)
+					{
+						if(i->second->keypart == input[1])
+						{
+							vector<string> subres = i->second->inner_nearests(input.substr(2), km);
+							res.insert(res.end(), subres.begin(), subres.end());
+						}
+						if(i->second->containsChild(input[1]))
+						{
+							vector<string> subres = i->second->children[input[1]]->inner_nearests(input.substr(2), km);
+							res.insert(res.end(), subres.begin(), subres.end());
+						}
+					}
+					if(input.length() > 2)
+					{
+						if(i->second->keypart == input[2])
+						{
+							vector<string> subres = i->second->inner_nearests(input.substr(3), km);
+							res.insert(res.end(), subres.begin(), subres.end());
+						}
+						if(i->second->containsChild(input[2]))
+						{
+							vector<string> subres = i->second->children[input[2]]->inner_nearests(input.substr(3), km);
+							res.insert(res.end(), subres.begin(), subres.end());
+						}
+					}
+				}
+				return res;
+			}
+	    public:
+			static bool comprecom(pair<int, string> e1, pair<int, string> e2)
+			{
+				return (e1.first < e2.first);
+			}
+	    	vector<string> first_level_words()
+	    	{
+	    		vector<string> res;
+				for(map<char, trienode*>::iterator i = children.begin(); i != children.end(); i++)
+				{
+					if(i->second->value != "")
+					{
+						res.push_back(i->second->value);
+					}
+				}
+				return res;
+			}
+	    	set<string> nearests(string input, keymap* km)
+	    	{
+	    		set<string> res;
+	    		vector<string> inner = inner_nearests(input, km);
+	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
+	    		{
+	    			res.insert(*i);
+				}
+				return res;
+			}
+			
+			vector<pair<int, string>> marked_nearests(string input, keymap* km)
+			{
+	    		map<string, int> res;
+	    		distancing dis("keymap.config");
+	    		vector<string> inner = inner_nearests(input, km);
+	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
+	    		{
+	    			if(res.count(*i) > 0)
+	    			{
+	    				res[*i] ++;
+	    			}
+	    			else
+	    			{
+	    				res.insert(make_pair(*i, 1));
+					}
+				}
+				vector<pair<int, string>> sortedres;
+				for(map<string, int>::iterator i = res.begin(); i != res.end(); i++)
+				{
+					if(i->second > 1)
+						sortedres.push_back(make_pair(i->second - 1, i->first));
+				}
+				sort(sortedres.begin(), sortedres.end(), comprecom);
+				return sortedres;
+			}
+			bool containsChild(char key)
+			{
+				return children.count(key) > 0;
+			}
+			
+	        trienode(trienode* parent, char keypart, string value, int mark)
+	        {
+	        	this->mark = mark;
+	            this->value = value;
+	            this->parent = parent;
+	            this->keypart = keypart;
+	        }
+	        void add(string key, string value)
+	        {
+	        	if(key.length() == 1)
+	        	{	
+		        	inner_add(new trienode(this, key[0], value, 1));
+		        	return;
+		        }
+		        else
+		        {
+		        	inner_add(new trienode(this, key[0], "", 0));
+		        	children[key[0]]->add(key.substr(1), value);
+				}
+	        }
+	        
+	        bool haskey(string key)
+	        {
+	            if(key.length() == 0)
+	            {
+	                return mark > 0;
+	            }
+	            if(children.count(key[0]) > 0)
+	                return children[key[0]]->haskey(key.substr(1));
+	            else
+	                return false;
+	        }
+	        
+	        trienode* find(string key)
+	        {
+	        	if(key.length() == 0)
+	            {
+	                if(mark > 0)
+	                	return this;
+	                else
+	                	return NULL;
+	            }
+	            if(children.count(key[0]) > 0)
+	                return children[key[0]]->find(key.substr(1));
+	            else
+	                return NULL;
+			}
+			
+			int getMark()
+			{
+				return mark;
+			}
+			string getValue()
+			{
+				return value;
 			}
 	};
 }
