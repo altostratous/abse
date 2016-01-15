@@ -221,7 +221,7 @@ namespace ds
 				}
 				else
 				{
-					if(child->mark > 0)
+					if(child->value != "")
 					{
 						children[child->keypart]->mark++;
 						if(children[child->keypart]->value == "")
