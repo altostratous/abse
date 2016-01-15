@@ -323,13 +323,14 @@ namespace ds
 	    		vector<string> inner = inner_nearests(input);
 	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
 	    		{
+	    			int marginal_mark = find(*i)->getMark();
 	    			if(res.count(*i) > 0)
 	    			{
-	    				res[*i] ++;
+	    				res[*i] += marginal_mark;
 	    			}
 	    			else
 	    			{
-	    				res.insert(make_pair(*i, 1));
+	    				res.insert(make_pair(*i, marginal_mark));
 					}
 				}
 				vector<pair<int, string>> sortedres;
