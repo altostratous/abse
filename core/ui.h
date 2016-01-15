@@ -99,6 +99,7 @@ namespace ui
 			watable wat;
 			bool pleaseexit;
 			bool ranconcommand;
+			trienode* dic;
 			// commands
 			exit()
 			{
@@ -196,9 +197,7 @@ namespace ui
 			{
 				string word;
 				cin>> word;
-				trienode* dic = wat.getDictionary();
-				cout<< (dic->haskey(word) ? "the word itself exists" : "the word doesnot exist")<<endl;
-				vector<pair<int, string>> nearests = dic->marked_nearests(word, new keymap("keymap.config"));
+				vector<pair<int, string>> nearests = dic->marked_nearests(word);
 				for(vector<pair<int, string>>::iterator i = nearests.begin(); i != nearests.end(); i++)
 				{
 					cout<<i->first<<"\t"<<i->second<<endl;
@@ -374,6 +373,7 @@ namespace ui
 				ranconcommand = false;
 				about();
 				help();
+				dic = new trienode("words.txt");
 			}
 			
 			

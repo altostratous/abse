@@ -232,7 +232,7 @@ namespace ds
 				}
 	        }
 	        
-			vector<string> inner_nearests(string input, keymap* km)
+			vector<string> inner_nearests(string input)
 			{
 				// go deep in the trie and return the nearest neighbours using good_distance
 				vector<string> res;
@@ -251,24 +251,24 @@ namespace ds
 				{
 					if(i->second->keypart == input[0])
 					{
-						vector<string> subres = i->second->inner_nearests(input.substr(1), km);
+						vector<string> subres = i->second->inner_nearests(input.substr(1));
 						res.insert(res.end(), subres.begin(), subres.end());
 					}
 					if(i->second->containsChild(input[0]))
 					{
-						vector<string> subres = i->second->children[input[0]]->inner_nearests(input.substr(1), km);
+						vector<string> subres = i->second->children[input[0]]->inner_nearests(input.substr(1));
 						res.insert(res.end(), subres.begin(), subres.end());
 					}
 					if(input.length() > 1)
 					{
 						if(i->second->keypart == input[1])
 						{
-							vector<string> subres = i->second->inner_nearests(input.substr(2), km);
+							vector<string> subres = i->second->inner_nearests(input.substr(2));
 							res.insert(res.end(), subres.begin(), subres.end());
 						}
 						if(i->second->containsChild(input[1]))
 						{
-							vector<string> subres = i->second->children[input[1]]->inner_nearests(input.substr(2), km);
+							vector<string> subres = i->second->children[input[1]]->inner_nearests(input.substr(2));
 							res.insert(res.end(), subres.begin(), subres.end());
 						}
 					}
@@ -276,12 +276,12 @@ namespace ds
 					{
 						if(i->second->keypart == input[2])
 						{
-							vector<string> subres = i->second->inner_nearests(input.substr(3), km);
+							vector<string> subres = i->second->inner_nearests(input.substr(3));
 							res.insert(res.end(), subres.begin(), subres.end());
 						}
 						if(i->second->containsChild(input[2]))
 						{
-							vector<string> subres = i->second->children[input[2]]->inner_nearests(input.substr(3), km);
+							vector<string> subres = i->second->children[input[2]]->inner_nearests(input.substr(3));
 							res.insert(res.end(), subres.begin(), subres.end());
 						}
 					}
@@ -305,10 +305,10 @@ namespace ds
 				}
 				return res;
 			}
-	    	set<string> nearests(string input, keymap* km)
+	    	set<string> nearests(string input)
 	    	{
 	    		set<string> res;
-	    		vector<string> inner = inner_nearests(input, km);
+	    		vector<string> inner = inner_nearests(input);
 	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
 	    		{
 	    			res.insert(*i);
@@ -316,11 +316,11 @@ namespace ds
 				return res;
 			}
 			
-			vector<pair<int, string>> marked_nearests(string input, keymap* km)
+			vector<pair<int, string>> marked_nearests(string input)
 			{
 	    		map<string, int> res;
 	    		distancing dis("keymap.config");
-	    		vector<string> inner = inner_nearests(input, km);
+	    		vector<string> inner = inner_nearests(input);
 	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
 	    		{
 	    			if(res.count(*i) > 0)
@@ -353,6 +353,22 @@ namespace ds
 	            this->parent = parent;
 	            this->keypart = keypart;
 	        }
+	        
+	        trienode(string dicpath)
+	        {
+	        	this->mark = 0;
+	            this->value = "";
+	            this->parent = NULL;
+	            this->keypart = '\000';
+	            ifstream fin(dicpath);
+	            string word;
+	            while(!fin.eof())
+	            {
+	            	getline(fin, word);
+	            	add(word, word);
+				}
+	        }
+	        
 	        void add(string key, string value)
 	        {
 	        	if(key.length() == 1)
