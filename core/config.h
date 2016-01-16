@@ -68,6 +68,8 @@ namespace disk
 					while(!fin.eof())
 					{
 						getline(fin, l);
+						if(l[0] == '\\' && l[1] == '\\')
+							continue;
 						add(l);
 					}
 					fin.close();

@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <map>
 #include <set>
+#include <ctime>
 
 #include "util.h"
 #include "search.h"
@@ -95,6 +96,7 @@ namespace ui
 	class cmdui
 	{
 		private:
+			unsigned long int starttime;
 			config conf;
 			watable wat;
 			bool pleaseexit;
@@ -369,6 +371,7 @@ namespace ui
 		public:
 			cmdui()
 			{
+				starttime = clock();
 				pleaseexit = false;
 				ranconcommand = false;
 				about();
@@ -380,8 +383,21 @@ namespace ui
 			void start()
 			{
 				streambuf* orig = cin.rdbuf();
+				int ignoretimeshow = false;
 				while(!pleaseexit)
 				{
+					starttime = clock() - starttime;
+					if(!ignoretimeshow && conf.getInteger("ShowTime")) 
+					{
+						cout<<green<<"Done in "<<starttime<<" clocks."<<endl<<white;
+					}
+					else
+					{
+						if(ignoretimeshow)
+						{
+							ignoretimeshow = false;
+						}
+					}
 					// get command and process
 					string command = "";
 					if(ranconcommand)
@@ -390,6 +406,7 @@ namespace ui
 						if(command == "")
 						{
     						std::cin.rdbuf(orig);
+    						ignoretimeshow = true;
 							continue;
 						}
 					}
@@ -402,7 +419,15 @@ namespace ui
 							cin>>command;
 							ranconcommand = true;
 						}
+						else
+						{
+							ranconcommand = true;
+							ignoretimeshow = true;
+							continue;
+						}
 					}
+					
+					starttime = clock();
 					
 					if(command == "exit")
 					{
