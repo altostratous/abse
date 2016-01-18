@@ -143,10 +143,10 @@ namespace index
 						sum += acci->distance(word1[i], word2[j]) / (abs(j - i) + 0.5);
 					}
 				}
-//				
-//				int ld = abs(word1.length() - word2.length());
-//				if(ld > 1)
-//					sum *= ld;
+				
+				int ld = abs(word1.length() - word2.length());
+				if(ld > 1)
+					sum *= ld;
 				
 				return sum;
 			}
@@ -155,8 +155,8 @@ namespace index
 			{
 				/* TODO (rasekh#1#): Calculate the distance deeply using the user 
 				                     marks and levinsteign and good_distance */
-				word1 = porter::stem(word1);
-				word2 = porter::stem(word2);
+				//word1 = porter::stem(word1);
+				//word2 = porter::stem(word2);
 //				double sd1 = good_distance(word1, word1);
 //				double sd2 = good_distance(word2, word2);
 				double dis = good_distance(word1, word2);
@@ -446,7 +446,7 @@ namespace index
 					for(vector<pair<int, string>>::iterator i = res.begin(); i != res.end(); i++)
 					{
 						double distance = dis->deep_distance(input, i->second);
-						cout<<distance<<" "<<i->second<<endl;
+						//cout<<distance<<" "<<i->second<<endl;
 						if(distance < min_dis)
 						{
 							min_dis = distance;
