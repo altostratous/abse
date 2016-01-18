@@ -90,7 +90,8 @@ namespace index
 				pair<int, int> c2coords = char_table[c2];
 				double euclid_distance = pow(pow((double)(c1coords.first - c2coords.first), 2.0) + pow((double)(c1coords.second - c2coords.second), 2.0), 0.5);
 				if(euclid_distance > 1)
-					euclid_distance = 2;
+					euclid_distance = 3;
+				euclid_distance += 0.5;
 				return euclid_distance;
 			}
 			vector<char> nearests(char input, double maxdis)
@@ -135,22 +136,33 @@ namespace index
 				double sum = 0;
 				for(int i = 0; i < word1.length(); i++)
 				{
+					double p1 = i / (double)word1.length();
 					for(int j = 0; j < word2.length(); j++)
 					{
-						if(abs(i - j) < 2)
-							sum += acci->distance(word1[i], word2[j]) / (abs(j - i) * 3 + 1);
+						double p2 = i / (double)word2.length();
+						sum += acci->distance(word1[i], word2[j]) / (abs(j - i) + 0.5);
 					}
 				}
-				if(abs((int)word1.length() - (int)word2.length()) > 1)
-					sum *= word1.length() * word2.length();
+//				
+//				int ld = abs(word1.length() - word2.length());
+//				if(ld > 1)
+//					sum *= ld;
+				
 				return sum;
 			}
 			
-			double deep_distance(string word1, string word2, int mark)
+			double deep_distance(string word1, string word2)
 			{
 				/* TODO (rasekh#1#): Calculate the distance deeply using the user 
 				                     marks and levinsteign and good_distance */
-				
+				word1 = porter::stem(word1);
+				word2 = porter::stem(word2);
+//				double sd1 = good_distance(word1, word1);
+//				double sd2 = good_distance(word2, word2);
+				double dis = good_distance(word1, word2);
+//				dis /= sd1;
+//				dis /= sd2;
+				return dis;
 			}
 	};
 	
@@ -185,14 +197,16 @@ namespace ds
 					if(child->value != "")
 					{
 						children[child->keypart]->mark+=child->mark;
-						if(children[child->keypart]->value == "")
-						{
-							children[child->keypart]->value = child->value;
-						}
+						children[child->keypart]->value = child->value;
 					}
 				}
 	        }
-	        
+	        string getKey()
+	        {
+	        	if(parent == NULL)
+	        		return "";
+	        	return parent->getKey() + keypart;
+			}
 			vector<string> inner_nearests(string input)
 			{
 				// go deep in the trie and return the nearest neighbours using good_distance
@@ -201,7 +215,7 @@ namespace ds
 				{
 					if(value != "")
 					{
-						res.push_back(value);
+						res.push_back(getKey());
 					}
 					vector<string>subres = first_level_words();
 					res.insert(res.end(), subres.begin(), subres.end());
@@ -285,13 +299,14 @@ namespace ds
 	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
 	    		{
 	    			int marginal_mark = find(*i)->getMark();
-	    			if(res.count(*i) > 0)
+	    			string current_value = find(*i)->getValue();
+	    			if(res.count(current_value) > 0)
 	    			{
-	    				res[*i] += marginal_mark;
+	    				res[current_value] += marginal_mark;
 	    			}
 	    			else
 	    			{
-	    				res.insert(make_pair(*i, marginal_mark));
+	    				res.insert(make_pair(current_value, marginal_mark));
 					}
 				}
 				vector<pair<int, string>> sortedres;
@@ -341,7 +356,7 @@ namespace ds
 		        else
 		        {
 		        	inner_add(new trienode(this, key[0], "", 0));
-		        	children[key[0]]->add(key.substr(1), value);
+		        	children[key[0]]->add(key.substr(1), value, rate);
 				}
 			}
 	        
@@ -361,7 +376,7 @@ namespace ds
 	        {
 	        	if(key.length() == 0)
 	            {
-	                if(mark > 0)
+	                if(value != "")
 	                	return this;
 	                else
 	                	return NULL;
@@ -422,15 +437,16 @@ namespace index
 					}
 					for(int i = res.size() - 1; i >= 0; i--)
 					{
-						if(res[i].first < max_mark)
+						if(abs(res[i].first - max_mark) > (max_mark / 2))
 							res.erase(res.begin() + i);
 					}
 					int min_dis_ind = 0; // the index of the word with the least distance
-					double min_dis = dis->good_distance(input, res[0].second);
+					double min_dis = dis->deep_distance(input, res[0].second);
 					int counter = 0;
 					for(vector<pair<int, string>>::iterator i = res.begin(); i != res.end(); i++)
 					{
-						double distance = dis->good_distance(input, i->second);
+						double distance = dis->deep_distance(input, i->second);
+						cout<<distance<<" "<<i->second<<endl;
 						if(distance < min_dis)
 						{
 							min_dis = distance;
@@ -462,9 +478,11 @@ namespace index
 								break;
 							case 4:
 								dic->add(input, recom, -1);
+								return "";
 								break;
 							default:
 								cout<<"Your idea is not important!"<<endl;
+								return input;
 								break;
 						}
 					}

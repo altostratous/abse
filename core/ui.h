@@ -212,6 +212,8 @@ namespace ui
 				{
 					cout<<i->first<<"\t"<<i->second<<endl;
 				}
+				spellcheck* sp = new spellcheck(dic, conf.getInteger("correction"), conf.getInteger("learning"), new distancing("keymap.config"));
+				sp->recommand(word);
 			}
 			
 			find()
