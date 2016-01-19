@@ -9,7 +9,7 @@
 #include <windows.h>
 #include <map>
 #include <set>
-#include <ctime>
+#include <sys/time.h>
 
 #include "util.h"
 #include "search.h"
@@ -102,6 +102,14 @@ namespace ui
 			bool pleaseexit;
 			bool ranconcommand;
 			trienode* dic;
+			
+			unsigned long int clock()
+			{
+				struct timeval tp;
+				gettimeofday(&tp, NULL);
+				return tp.tv_sec * 1000 + tp.tv_usec / 1000;
+			}
+			
 			// commands
 			exit()
 			{
@@ -338,8 +346,9 @@ namespace ui
 			{
 				string cond_str;
 				getline(cin, cond_str);
-				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true));
-				condition cond(cond_str, conf.getInteger("StemInput"));
+				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true)); 
+				spellcheck* sp = new spellcheck(dic, conf.getInteger("correction"), conf.getInteger("learning"), new distancing("keymap.config"));
+				condition cond(cond_str, conf.getInteger("StemInput"), sp);
 				if(conf.getInteger("DoOptimization"))
 				{
 					if(conf.getInteger("EchoOptimization"))

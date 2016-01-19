@@ -201,7 +201,7 @@ namespace search
 			}
 			
 			
-			condition(string cond, bool steminput = false)
+			condition(string cond, bool steminput = false, spellcheck* sp = NULL)
 			{
 				// do some normalization
 				while(cond[0] == ' ' && cond.length() > 0)
@@ -302,7 +302,7 @@ namespace search
 						left_phrase != "NOT"
 					)
 					{
-						condition* constructed = new condition(cond.substr(0, phrases[i + 1].index) + " AND " + cond.substr(phrases[i + 1].index));
+						condition* constructed = new condition(cond.substr(0, phrases[i + 1].index) + " AND " + cond.substr(phrases[i + 1].index), steminput, sp);
 						this->operand = constructed->operand;
 						this->word = constructed->word;
 						this->left = constructed->left;
@@ -322,8 +322,8 @@ namespace search
 						/* DONE (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
-						this->left = new condition(cond.substr(0, phrases[i].index));
-						this->right = new condition(cond.substr(phrases[i].index + 2));
+						this->left = new condition(cond.substr(0, phrases[i].index), steminput, sp);
+						this->right = new condition(cond.substr(phrases[i].index + 2), steminput, sp);
 						this->operand = OR;
 						return;
 					}
@@ -339,8 +339,8 @@ namespace search
 						/* DONE (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
-						this->left = new condition(cond.substr(0, phrases[i].index));
-						this->right = new condition(cond.substr(phrases[i].index + 3));
+						this->left = new condition(cond.substr(0, phrases[i].index), steminput, sp);
+						this->right = new condition(cond.substr(phrases[i].index + 3), steminput, sp);
 						this->operand = AND;
 						return;
 					}
@@ -357,8 +357,8 @@ namespace search
 						/* DONE (asgari#1#): normalize the input condition for duplicate 
 						                     spaces and etc. */
 						
-						this->left = new condition(cond.substr(0, phrases[i].index));
-						this->right = new condition(cond.substr(phrases[i].index + 3));
+						this->left = new condition(cond.substr(0, phrases[i].index), steminput, sp);
+						this->right = new condition(cond.substr(phrases[i].index + 3), steminput,  sp);
 						this->operand = NOT;
 						return;
 					}
@@ -368,6 +368,13 @@ namespace search
 				if(cond.length() == phrases[0].length)
 				{
 					this->operand = CONTAINS;
+					
+					// do recommandation
+					if(sp != NULL)
+					{
+						cond = sp->recommand(cond);
+					}
+					
 					if(steminput)
 						this->word = porter::stem(cond);
 					else
@@ -377,7 +384,7 @@ namespace search
 				
 				// otherwise
 				condition* constructed;
-				constructed = new condition(cond.substr(phrases[0].index, phrases[0].length));
+				constructed = new condition(cond.substr(phrases[0].index, phrases[0].length), steminput, sp);
 				/*if(phrases.size() == 1)
 				{
 					constructed = new condition(cond.substr(phrases[0].index, phrases[0].length));

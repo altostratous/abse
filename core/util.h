@@ -3,9 +3,8 @@
 			 the core should include this file only.
 */
 
-#include "preprocess.h"
-#include "index.h"
 #include "file.h"
+#include "index.h"
 #include "config.h"
 #include "ui.h"
 #include "language.h"

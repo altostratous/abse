@@ -112,7 +112,7 @@ namespace disk
 				char* str = (char*) malloc(getString(key).length());
 				strcpy(str, getString(key).c_str());
 				int res =  atoi(str);
-				free (str);
+				//free (str);
 				return res;
 			}
 			

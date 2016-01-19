@@ -154,46 +154,7 @@ namespace index
 			}
 	};
 	
-	/* TODO (asgari#1#): Designing the input assistant */
-	/* TODO (asgari#1#): Migrate this to trienode */
-	
-	class spellcheck
-	{
-		private:
-			/* TODO (rasekh#1#): Add some configurations:
-			                       1- nearest words distance threshold
-			                       2- learning rate
-			                       ... */
-			
-			
-		public:
-			vector<string> recommand(string input)
-			{
-				/* TODO (rasekh#1#): recommand the nearest neighbours for the 
-				                     word given word sorted by the distance measure */
-				
-				// sort the words using LivenSteign
-				// sort the reocmmanded words Using good_distance
-			}
-			void raterecom(string input, string recommanded, int mark)
-			{
-				
-			}
-			void save(string path)
-			{
-				/* TODO (rasekh#1#): the spelling and recommandation system 
-				                     should be storable and restorable.
-				                     do the storing  here. */
-				
-			}
-			void load(string path)
-			{
-				/* TODO (rasekh#1#): the spelling and recommandation system 
-				                     should be storable and restorable. Do restore 
-				                     the system in here */
-				
-			}
-	};
+
 }
 
 using namespace index;
@@ -223,7 +184,7 @@ namespace ds
 				{
 					if(child->value != "")
 					{
-						children[child->keypart]->mark++;
+						children[child->keypart]->mark+=child->mark;
 						if(children[child->keypart]->value == "")
 						{
 							children[child->keypart]->value = child->value;
@@ -369,12 +330,12 @@ namespace ds
 	            	add(word, word);
 				}
 	        }
-	        
-	        void add(string key, string value)
+	        // funtion for adding the word to the dictianory and rating corrections
+	        void add(string key, string value, int rate = 1)
 	        {
 	        	if(key.length() == 1)
 	        	{	
-		        	inner_add(new trienode(this, key[0], value, 1));
+		        	inner_add(new trienode(this, key[0], value, rate));
 		        	return;
 		        }
 		        else
@@ -382,7 +343,7 @@ namespace ds
 		        	inner_add(new trienode(this, key[0], "", 0));
 		        	children[key[0]]->add(key.substr(1), value);
 				}
-	        }
+			}
 	        
 	        bool haskey(string key)
 	        {
@@ -418,6 +379,122 @@ namespace ds
 			string getValue()
 			{
 				return value;
+			}
+	};
+}
+
+namespace index 
+{
+		/* TODO (asgari#1#): Designing the input assistant */
+	/* TODO (asgari#1#): Migrate this to trienode */
+	
+	class spellcheck
+	{
+		private:
+			/* TODO (rasekh#1#): Add some configurations:
+			                       1- nearest words distance threshold
+			                       2- learning rate
+			                       ... */
+			bool dorecommand;
+			bool dolearn;
+			trienode * dic;
+			distancing* dis;
+			
+		public:
+			string recommand(string input)
+			{
+				if(!dorecommand)
+					return input;
+				vector<pair<int, string>> res = dic->marked_nearests(input);
+				if(res.size() == 0)
+				{
+					if(dolearn)
+						dic->add(input, input);
+					return input;
+				}
+				else
+				{
+					int max_mark = 0;
+					for(vector<pair<int, string>>::iterator i = res.begin(); i != res.end(); i++)
+					{
+						if(i->first > max_mark)
+							max_mark = i->first;
+					}
+					for(int i = res.size() - 1; i >= 0; i--)
+					{
+						if(res[i].first < max_mark)
+							res.erase(res.begin() + i);
+					}
+					int min_dis_ind = 0; // the index of the word with the least distance
+					double min_dis = dis->good_distance(input, res[0].second);
+					int counter = 0;
+					for(vector<pair<int, string>>::iterator i = res.begin(); i != res.end(); i++)
+					{
+						double distance = dis->good_distance(input, i->second);
+						if(distance < min_dis)
+						{
+							min_dis = distance;
+							min_dis_ind = counter;
+						}
+						counter++;
+					}
+					if(dolearn)
+					{
+						string recom =res[min_dis_ind].second;
+						if(recom == input)
+							return recom;
+						cout<<"We recommend "<<recom<<" instead of "<<input<<"."<<endl;
+						cout<<"What is your idea? 1. Like! 2. No, the Original one! 3. Don't mind it! 4. You're wrong definitly!";
+						int idea;
+						cin>>idea;
+						switch(idea)
+						{
+							case 1:
+								dic->add(input, recom, 1);
+								return recom;
+								break;
+							case 2:
+							    dic->add(input, input, 1);
+								return input;
+								break;
+							case 3:
+								return "";
+								break;
+							case 4:
+								dic->add(input, recom, -1);
+								break;
+							default:
+								cout<<"Your idea is not important!"<<endl;
+								break;
+						}
+					}
+					else
+					{
+						return res[min_dis_ind].second;
+					}
+				}
+			}
+			spellcheck(trienode * dic, bool dorecommand, bool dolearn, distancing* dis)
+			{
+				this->dic = dic;
+				this->dolearn = dolearn;
+				this->dorecommand = dorecommand;
+				this->dis = dis;
+				ignore = false;
+			}
+			void save(string path)
+			{
+				/* TODO (rasekh#1#): the spelling and recommandation system 
+				                     should be storable and restorable.
+				                     do the storing  here. */
+				
+			}
+			void load(string path)
+			{
+				/* TODO (rasekh#1#): the spelling and recommandation system 
+				                     should be storable and restorable. Do restore 
+				                     the system in here */
+				
 			}
 	};
 }
