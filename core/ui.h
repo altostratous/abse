@@ -207,11 +207,11 @@ namespace ui
 			{
 				string word;
 				cin>> word;
-				vector<pair<int, string>> nearests = dic->marked_nearests(word);
-				for(vector<pair<int, string>>::iterator i = nearests.begin(); i != nearests.end(); i++)
-				{
-					cout<<i->first<<"\t"<<i->second<<endl;
-				}
+//				vector<pair<int, string>> nearests = dic->marked_nearests(word);
+//				for(vector<pair<int, string>>::iterator i = nearests.begin(); i != nearests.end(); i++)
+//				{
+//					cout<<i->first<<"\t"<<i->second<<endl;
+//				}
 				spellcheck* sp = new spellcheck(dic, conf.getInteger("correction"), conf.getInteger("learning"), new distancing("keymap.config"));
 				sp->recommand(word);
 			}

@@ -183,8 +183,9 @@ namespace ds
 	        trienode* parent;
 	        map<char, trienode*> children;
 	        char keypart;
-	        string value;
-	        int mark;
+	        // string value;
+	        map<string, int> values;
+	        // int mark;
 	        void inner_add(trienode* child)
 	        {
 	        	if(children.count(child->keypart) == 0)
@@ -194,10 +195,13 @@ namespace ds
 				}
 				else
 				{
-					if(child->value != "")
+					if(child->getValue() != "")
 					{
-						children[child->keypart]->mark+=child->mark;
-						children[child->keypart]->value = child->value;
+						if(children[child->keypart]->values.count(child->getValue()) > 0)
+							children[child->keypart]->values[child->getValue()]+=child->getMark();
+						else
+							children[child->keypart]->values[child->getValue()]=child->getMark();
+						// children[child->keypart]->value = child->value;
 					}
 				}
 	        }
@@ -213,7 +217,7 @@ namespace ds
 				vector<string> res;
 				if(input.length() < 2)
 				{
-					if(value != "")
+					if(values.size() > 0)
 					{
 						res.push_back(getKey());
 					}
@@ -268,14 +272,15 @@ namespace ds
 			{
 				return (e1.first < e2.first);
 			}
+			// returns keys to first level words
 	    	vector<string> first_level_words()
 	    	{
 	    		vector<string> res;
 				for(map<char, trienode*>::iterator i = children.begin(); i != children.end(); i++)
 				{
-					if(i->second->value != "")
+					if(i->second->values.size() > 0)
 					{
-						res.push_back(i->second->value);
+						res.push_back(i->second->getKey());
 					}
 				}
 				return res;
@@ -286,7 +291,7 @@ namespace ds
 	    		vector<string> inner = inner_nearests(input);
 	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
 	    		{
-	    			res.insert(*i);
+	    			res.insert(find(*i)->getValue());
 				}
 				return res;
 			}
@@ -298,22 +303,26 @@ namespace ds
 	    		vector<string> inner = inner_nearests(input);
 	    		for(vector<string>::iterator i = inner.begin(); i != inner.end(); i++)
 	    		{
-	    			int marginal_mark = find(*i)->getMark();
-	    			string current_value = find(*i)->getValue();
-	    			if(res.count(current_value) > 0)
+	    			for(map<string, int>::iterator val = find(*i)->values.begin(); val != find(*i)->values.end(); val++)
 	    			{
-	    				res[current_value] += marginal_mark;
-	    			}
-	    			else
-	    			{
-	    				res.insert(make_pair(current_value, marginal_mark));
+						
+		    			int marginal_mark = find(*i)->values[val->first];
+		    			string current_value = val->first;
+		    			if(res.count(current_value) > 0)
+		    			{
+		    				res[current_value] += marginal_mark;
+		    			}
+		    			else
+		    			{
+		    				res.insert(make_pair(current_value, marginal_mark));
+						}
 					}
 				}
 				vector<pair<int, string>> sortedres;
 				for(map<string, int>::iterator i = res.begin(); i != res.end(); i++)
 				{
-					if(i->second > 1)
-						sortedres.push_back(make_pair(i->second - 1, i->first));
+					if(i->first != "")
+						sortedres.push_back(make_pair(i->second, i->first));
 				}
 				sort(sortedres.begin(), sortedres.end(), comprecom);
 				return sortedres;
@@ -325,16 +334,13 @@ namespace ds
 			
 	        trienode(trienode* parent, char keypart, string value, int mark)
 	        {
-	        	this->mark = mark;
-	            this->value = value;
+	            this->values[value] = mark;
 	            this->parent = parent;
 	            this->keypart = keypart;
 	        }
 	        
 	        trienode(string dicpath)
 	        {
-	        	this->mark = 0;
-	            this->value = "";
 	            this->parent = NULL;
 	            this->keypart = '\000';
 	            ifstream fin(dicpath);
@@ -364,7 +370,7 @@ namespace ds
 	        {
 	            if(key.length() == 0)
 	            {
-	                return mark > 0;
+	                return values.size() > 0;
 	            }
 	            if(children.count(key[0]) > 0)
 	                return children[key[0]]->haskey(key.substr(1));
@@ -376,7 +382,7 @@ namespace ds
 	        {
 	        	if(key.length() == 0)
 	            {
-	                if(value != "")
+	                if(values.size() > 0)
 	                	return this;
 	                else
 	                	return NULL;
@@ -389,11 +395,25 @@ namespace ds
 			
 			int getMark()
 			{
-				return mark;
+				int max_mark = 0;
+				if(values.size() > 0)
+					max_mark = values.begin()->second;
+				for(map<string, int>::iterator i = values.begin(); i != values.end(); i++)
+				{
+					if(i->second > max_mark)
+						max_mark = i->second;
+				}
+				return max_mark;
 			}
 			string getValue()
 			{
-				return value;
+				int max_mark = getMark();
+				for(map<string, int>::iterator i = values.begin(); i != values.end(); i++)
+				{
+					if(i->second == max_mark)
+						return i->first;
+				}
+				return "";
 			}
 	};
 }
