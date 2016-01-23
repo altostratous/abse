@@ -101,7 +101,8 @@ namespace ui
 			watable wat;
 			bool pleaseexit;
 			bool ranconcommand;
-			trienode* dic;
+			//trienode* dic;
+			spellcheck* sp;
 			
 			unsigned long int clock()
 			{
@@ -207,12 +208,11 @@ namespace ui
 			{
 				string word;
 				cin>> word;
-//				vector<pair<int, string>> nearests = dic->marked_nearests(word);
-//				for(vector<pair<int, string>>::iterator i = nearests.begin(); i != nearests.end(); i++)
-//				{
-//					cout<<i->first<<"\t"<<i->second<<endl;
-//				}
-				spellcheck* sp = new spellcheck(dic, conf.getInteger("correction"), conf.getInteger("learning"), new distancing("keymap.config"));
+				vector<pair<int, string>> nearests = sp->getDic()->marked_nearests(word);
+				for(vector<pair<int, string>>::iterator i = nearests.begin(); i != nearests.end(); i++)
+				{
+					cout<<i->first<<"\t"<<i->second<<endl;
+				}
 				sp->recommand(word);
 			}
 			
@@ -311,6 +311,7 @@ namespace ui
 			save()
 			{
 				conf.save();
+				sp->save(conf.getString("DicPath"));
 				cout<<green<<"Configurations saved successfully."<<white<<endl;
 			}
 			
@@ -349,7 +350,6 @@ namespace ui
 				string cond_str;
 				getline(cin, cond_str);
 				file f(dir::getFiles(conf.getString("FilesDirectory").c_str(), true)); 
-				spellcheck* sp = new spellcheck(dic, conf.getInteger("correction"), conf.getInteger("learning"), new distancing("keymap.config"));
 				condition cond(cond_str, conf.getInteger("StemInput"), sp);
 				if(conf.getInteger("DoOptimization"))
 				{
@@ -387,7 +387,8 @@ namespace ui
 				ranconcommand = false;
 				about();
 				help();
-				dic = new trienode("words.txt");
+				//dic = new trienode("words.txt");
+				sp = new spellcheck(conf.getString("DicPath"), conf.getInteger("correction"), conf.getInteger("learning"), new distancing("keymap.config"));
 			}
 			
 			

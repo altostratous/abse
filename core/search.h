@@ -128,6 +128,7 @@ namespace search
 				vector<condition**> isolevels = getIsoLevels();
 				left->inner_optimize(wat);
 				right->inner_optimize(wat);
+				
 				if(operand == OR)
 				{
 					sort(isolevels, INFIMUM_BASED, wat);
@@ -135,7 +136,6 @@ namespace search
 					{
 						operand = ALL;
 					}
-					return;
 				}
 				if(operand == AND)
 				{
@@ -160,8 +160,8 @@ namespace search
 						this->right = left->right;
 					}
 					
-					return;
 				}
+				
 				/* DONE (asgari#1#): optimize non-isolevels */
 				
 			}

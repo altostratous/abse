@@ -145,7 +145,7 @@ namespace index
 				}
 				
 				int ld = abs(word1.length() - word2.length());
-				if(ld > 1)
+				if(ld > 0)
 					sum *= ld;
 				
 				return sum;
@@ -160,9 +160,24 @@ namespace index
 //				double sd1 = good_distance(word1, word1);
 //				double sd2 = good_distance(word2, word2);
 				double dis = good_distance(word1, word2);
+//				word1 = unitize(word1);
+//				word2 = unitize(word2);
+//				dis *= good_distance(word1, word2);
 //				dis /= sd1;
 //				dis /= sd2;
 				return dis;
+			}
+			string unitize(string str)
+			{
+				for(int i =0; i < str.length(); i++)
+				{
+					for(int j = str.length()-1; j  > i; j--)
+					{
+						if(str[i] == str[j])
+							str.erase(str.begin() + j);
+					}
+				}
+				return str;
 			}
 	};
 	
@@ -268,6 +283,32 @@ namespace ds
 				return res;
 			}
 	    public:
+	        string serialize()
+			{
+				string res = ""; 
+	    		res += to_string(((int)values.size())) + "\n";
+	    		res += getKey() + "\n";
+	    		for(auto i = values.begin(); i != values.end(); i++)
+	    		{
+	    			res += i->first + '\t';
+	    			res += to_string(i->second) + '\n';
+				}
+				return res;
+			}
+			vector<trienode*> getAll()
+			{
+				vector<trienode*>res;
+				if(getValue() != "")
+				{
+					res.push_back(this);
+				}
+				for(map<char, trienode*>::iterator i = children.begin(); i != children.end(); i++)
+				{
+					vector<trienode*> subres = i->second->getAll();
+					res.insert(res.begin(), subres.begin(), subres.end());
+				}
+				return res;
+			}
 			static bool comprecom(pair<int, string> e1, pair<int, string> e2)
 			{
 				return (e1.first < e2.first);
@@ -321,8 +362,8 @@ namespace ds
 				vector<pair<int, string>> sortedres;
 				for(map<string, int>::iterator i = res.begin(); i != res.end(); i++)
 				{
-					if(i->first != "")
-						sortedres.push_back(make_pair(i->second, i->first));
+					if(i->second > 1)
+					sortedres.push_back(make_pair(i->second - 1, i->first));
 				}
 				sort(sortedres.begin(), sortedres.end(), comprecom);
 				return sortedres;
@@ -332,9 +373,16 @@ namespace ds
 				return children.count(key) > 0;
 			}
 			
+	        trienode()
+	        {
+	            this->parent = NULL;
+	            this->keypart = '\000';
+	        }
+	        
 	        trienode(trienode* parent, char keypart, string value, int mark)
 	        {
-	            this->values[value] = mark;
+	        	if(value!="")
+	            	this->values[value] = mark;
 	            this->parent = parent;
 	            this->keypart = keypart;
 	        }
@@ -436,6 +484,10 @@ namespace index
 			distancing* dis;
 			
 		public:
+			trienode* getDic()
+			{
+				return dic;
+			}
 			string recommand(string input)
 			{
 				if(!dorecommand)
@@ -520,19 +572,45 @@ namespace index
 				this->dis = dis;
 				ignore = false;
 			}
+			spellcheck(string dicpath, bool dorecommand, bool dolearn, distancing* dis)
+			{
+				this->dic = new trienode();
+				this->dolearn = dolearn;
+				this->dorecommand = dorecommand;
+				this->dis = dis;
+				ignore = false;
+					/* TODO (rasekh#1#): the spelling and recommandation system 
+				                     should be storable and restorable. Do restore 
+				                     the system in here */
+				ifstream fin(dicpath);
+				int count;
+				string key;
+				string value;
+				int mark;
+				while(!fin.eof())
+				{
+					fin>>count;
+					fin>>key;
+					for(int i = 0; i < count; i++)
+					{
+						fin>>value;
+						fin>>mark;
+						dic->add(key, value, mark);
+					}
+				}
+				fin.close();
+			}
 			void save(string path)
 			{
 				/* TODO (rasekh#1#): the spelling and recommandation system 
 				                     should be storable and restorable.
 				                     do the storing  here. */
-				
-			}
-			void load(string path)
-			{
-				/* TODO (rasekh#1#): the spelling and recommandation system 
-				                     should be storable and restorable. Do restore 
-				                     the system in here */
-				
+				ofstream fout(path);
+				vector<trienode*> all = dic->getAll();
+				for(vector<trienode*>::iterator i = all.begin(); i != all.end(); i++)
+				{
+					fout<<((*i)->serialize());
+				}
 			}
 	};
 }
