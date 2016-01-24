@@ -119,6 +119,7 @@ namespace disk
 							{
 								occurrance o;
 								o.file_id = distance(filenames.begin(), i);
+								o.file_id += fileidstart;
 								o.index = index - word.length() - 1;
 								o.length = word.length();
 								o.paragraph_id = paragraph_id;
@@ -141,7 +142,7 @@ namespace disk
 			
 			string look(occurrance o)
 			{
-				string path = *(filenames.begin() + o.file_id);
+				string path = filenames[o.file_id];
 				ifstream fin(path.c_str());
 				for(int i = 0; i < o.index; i++)
 					fin.get();

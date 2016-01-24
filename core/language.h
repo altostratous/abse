@@ -501,7 +501,7 @@ namespace index
 				}
 				else
 				{
-					int max_mark = 0;
+					int max_mark = res[0].first;
 					for(vector<pair<int, string>>::iterator i = res.begin(); i != res.end(); i++)
 					{
 						if(i->first > max_mark)

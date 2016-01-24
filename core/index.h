@@ -140,6 +140,14 @@ namespace index
 						}
 						j++;
 					}
+					while(j != waocs.end())
+					{
+						if((*(i - 1)).file_id == (*j).file_id)
+						{
+							ocs.push_back(*j);
+						}
+						j++;
+					}
 					occurrances = ocs;
 				}
 			}
@@ -269,17 +277,18 @@ namespace index
 	{
 		private:
 			string stopwords;
+			lowerer l;
+			stemmer s;
+			removestopwords* r;
 		public:
 			normalizer(string stopwords)
 			{
 				this->stopwords = stopwords;
+				r = new removestopwords(stopwords);
 			}
 			string process(string input, occurrance o)
 			{
-				lowerer l;
-				stemmer s;
-				removestopwords r(stopwords);
-				return r.process(s.process(l.process(input, o), o), o);
+				return r->process(s.process(l.process(input, o), o), o);
 			}
 	};
 }
@@ -366,7 +375,7 @@ namespace ds
 			}
 			
 			
-			watable(int hashcount = 40000)
+			watable(int hashcount = 80000)
 			{
 				all  = new wanalysis("");
 				this->hashcount = hashcount;

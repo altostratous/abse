@@ -3086,6 +3086,9 @@ thompson	1
 thomas
 thomas	1
 1
+thiss
+this	1
+1
 this
 this	1
 1
@@ -3115,6 +3118,9 @@ thing	1
 1
 thin
 thin	1
+1
+thies
+this	1
 1
 thickness
 thickness	1
@@ -15299,6 +15305,12 @@ kid	1
 kick
 kick	1
 1
+khomeini
+khomeini	1
+1
+khamenei
+khamenei	1
+1
 kg
 kg	1
 1
@@ -17570,6 +17582,9 @@ helmet	1
 hello
 hello	1
 1
+helllooo
+hello	1
+1
 hell
 hell	1
 1
@@ -18334,6 +18349,9 @@ gore	1
 1
 gordon
 gordon	1
+1
+goood
+good	1
 1
 google
 google	1
@@ -29961,4 +29979,4 @@ aa
 aa	1
 1
 a
-a	1
+a	8
